@@ -23,8 +23,8 @@ public class EntityRegistryGenerator extends RegistryGenerator<EntityData> {
             entities.add(new EntityData(
                 entityTypeRegistry.getId(entity),
                 registryKey.getPath(),
-                entity.getDimensions().width,
-                entity.getDimensions().height,
+                entity.getDimensions().width(),
+                entity.getDimensions().height(),
                 org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType.valueOf(
                     registryKey.getPath().toUpperCase())
             ));

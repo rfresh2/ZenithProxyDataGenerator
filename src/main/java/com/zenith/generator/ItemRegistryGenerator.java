@@ -21,7 +21,7 @@ public class ItemRegistryGenerator extends RegistryGenerator<ItemData> {
         registry.stream().forEach(item -> items.add(new ItemData(
             registry.getId(item),
             registry.getKey(item).getPath(),
-            item.getMaxStackSize())
+            item.getDefaultMaxStackSize())
         ));
         return items;
     }

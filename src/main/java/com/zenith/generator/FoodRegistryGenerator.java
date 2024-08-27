@@ -1,9 +1,10 @@
 package com.zenith.generator;
 
-import com.mojang.datafixers.util.Pair;
 import com.squareup.javapoet.CodeBlock;
 import com.zenith.mc.food.FoodData;
 import net.minecraft.core.DefaultedRegistry;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -14,7 +15,6 @@ import net.minecraft.world.item.Item;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class FoodRegistryGenerator extends RegistryGenerator<FoodData> {
     public FoodRegistryGenerator() {
@@ -27,14 +27,14 @@ public class FoodRegistryGenerator extends RegistryGenerator<FoodData> {
 
         DefaultedRegistry<Item> registry = BuiltInRegistries.ITEM;
         registry.stream()
-            .filter(Item::isEdible)
+            .filter(item -> item.components().has(DataComponents.FOOD))
             .forEach(food -> {
-                FoodProperties foodComponent = Objects.requireNonNull(food.getFoodComponent(food.getDefaultInstance()));
-                int foodPoints = foodComponent.getNutrition();
-                float saturationRatio = foodComponent.getSaturationModifier() * 2.0F;
+                FoodProperties foodComponent = food.components().get(DataComponents.FOOD);
+                int foodPoints = foodComponent.nutrition();
+                float saturationRatio = foodComponent.saturation() * 2.0F;
                 float saturation = foodPoints * saturationRatio;
-                List<MobEffect> effects = foodComponent.getEffects().stream()
-                    .map(Pair::getFirst)
+                List<Holder<MobEffect>> effects = foodComponent.effects().stream()
+                    .map(FoodProperties.PossibleEffect::effect)
                     .map(MobEffectInstance::getEffect)
                     .toList();
                 boolean isSafeFood = !effects.contains(MobEffects.POISON)
@@ -43,7 +43,7 @@ public class FoodRegistryGenerator extends RegistryGenerator<FoodData> {
                 var data = new FoodData(
                     registry.getId(food),
                     registry.getKey(food).getPath(),
-                    food.getMaxStackSize(),
+                    food.getDefaultMaxStackSize(),
                     foodPoints,
                     saturation,
                     isSafeFood
