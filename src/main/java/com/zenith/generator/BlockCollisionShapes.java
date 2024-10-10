@@ -5,12 +5,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.zenith.DataGenerator;
+import com.zenith.extension.IBlockProperties;
+import com.zenith.mc.block.BlockOffsetType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.io.FileWriter;
@@ -51,6 +54,12 @@ public class BlockCollisionShapes implements Generator {
 
             for (BlockState blockState : blockStates) {
                 VoxelShape blockShape = blockState.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO);
+                BlockOffsetType offsetType = ((IBlockProperties) blockState.getBlock().properties()).getOffsetType();
+                if (offsetType != BlockOffsetType.NONE) {
+                    Vec3 reverseOffset = blockState.getOffset(EmptyBlockGetter.INSTANCE, BlockPos.ZERO).reverse();
+                    blockShape = blockShape.move(reverseOffset.x(), reverseOffset.y(), reverseOffset.z());
+                }
+
                 Integer blockShapeIndex = uniqueBlockShapes.get(blockShape);
 
                 if (blockShapeIndex == null) {
