@@ -1,7 +1,10 @@
 package com.zenith.generator;
 
 import com.squareup.javapoet.CodeBlock;
+import com.zenith.extension.IBlockProperties;
 import com.zenith.mc.block.Block;
+import com.zenith.mc.block.BlockOffsetType;
+import com.zenith.mixin.AccessorBlockBehavior;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.EmptyBlockGetter;
@@ -39,6 +42,9 @@ public class BlockRegistryGenerator extends RegistryGenerator<Block> {
                 net.minecraft.world.level.block.Block.getId(blockStates.getFirst()),
                 net.minecraft.world.level.block.Block.getId(blockStates.getLast()),
                 block.defaultMapColor().id,
+                ((IBlockProperties) block.properties()).getOffsetType(),
+                ((AccessorBlockBehavior) block).invokeGetMaxHorizontalOffset(),
+                ((AccessorBlockBehavior) block).invokeGetMaxVerticalOffset(),
                 mcplBlockEntityType);
             blockList.add(data);
         });
@@ -49,7 +55,7 @@ public class BlockRegistryGenerator extends RegistryGenerator<Block> {
     public CodeBlock dataInitializer(final Block data) {
         if (data.blockEntityType() == null) {
             return CodeBlock.of(
-                "new $T($L, $S, $L, $L, $L, $L, $L)",
+                "new $T($L, $S, $L, $L, $L, $L, $T.$L, $Lf, $Lf, $L)",
                 Block.class,
                 data.id(),
                 data.name(),
@@ -57,11 +63,15 @@ public class BlockRegistryGenerator extends RegistryGenerator<Block> {
                 data.minStateId(),
                 data.maxStateId(),
                 data.mapColorId(),
+                BlockOffsetType.class,
+                data.offsetType(),
+                data.maxHorizontalOffset(),
+                data.maxVerticalOffset(),
                 null
             );
         }
         return CodeBlock.of(
-            "new $T($L, $S, $L, $L, $L, $L, $T.$L)",
+            "new $T($L, $S, $L, $L, $L, $L, $T.$L, $Lf, $Lf, $T.$L)",
             Block.class,
             data.id(),
             data.name(),
@@ -69,6 +79,10 @@ public class BlockRegistryGenerator extends RegistryGenerator<Block> {
             data.minStateId(),
             data.maxStateId(),
             data.mapColorId(),
+            BlockOffsetType.class,
+            data.offsetType(),
+            data.maxHorizontalOffset(),
+            data.maxVerticalOffset(),
             BlockEntityType.class,
             data.blockEntityType()
         );

@@ -2,6 +2,10 @@
   "required": true,
   "package": "com.zenith.mixin",
   "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "AccessorBlockBehavior",
+    "MixinBlockProperties"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
