@@ -20,8 +20,7 @@ public class EnchantmentRegistryGenerator extends RegistryGenerator<EnchantmentD
     public List<EnchantmentData> buildDataList() {
         final List<EnchantmentData> enchants = new ArrayList<>();
         Registry<Enchantment> registry = DataGenerator.SERVER_INSTANCE.registryAccess()
-            .registry(Registries.ENCHANTMENT)
-            .get();
+            .lookupOrThrow(Registries.ENCHANTMENT);
         registry.stream().forEach(enchant -> enchants.add(new EnchantmentData(
             registry.getId(enchant),
             registry.getKey(enchant).getPath()

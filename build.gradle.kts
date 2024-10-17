@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom") version "1.7-SNAPSHOT"
+    id("fabric-loom") version "1.8-SNAPSHOT"
 }
 
 group = "com.zenith"
@@ -7,7 +7,10 @@ version = "1.0.0"
 
 repositories {
     mavenLocal {
-        content { includeGroup("com.zenith") }
+        content {
+            includeGroup("com.zenith")
+            includeGroup("com.github.rfresh2:MCProtocolLib")
+        }
     }
     mavenCentral()
     maven("https://maven.2b2t.vc/releases") {
@@ -29,18 +32,18 @@ loom {
 val lombokVersion = "1.18.34"
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.21")
+    minecraft("com.mojang:minecraft:1.21.2-rc1")
     mappings(loom.layered {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-1.21:2024.07.28@zip")
     })
-    modImplementation("net.fabricmc:fabric-loader:0.15.11")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.100.1+1.21")
+    modImplementation("net.fabricmc:fabric-loader:0.16.7")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.106.0+1.21.2")
     implementation("com.squareup:javapoet:1.13.0")
-    implementation("com.github.rfresh2:MCProtocolLib:1.21.0.7") {
+    implementation("com.github.rfresh2:MCProtocolLib:1.21.2.3") {
         exclude("*")
     }
-    implementation("com.zenith:ZenithProxy:1.21.0") {
+    implementation("com.zenith:ZenithProxy:1.21.2") {
         exclude("*")
     }
     compileOnly("org.projectlombok:lombok:$lombokVersion")

@@ -21,8 +21,7 @@ public class DimensionTypesRegistryGenerator extends RegistryGenerator<Dimension
     public List<DimensionData> buildDataList() {
         List<DimensionData> result = new ArrayList<>();
         Registry<DimensionType> registry = DataGenerator.SERVER_INSTANCE.registryAccess()
-            .registry(Registries.DIMENSION_TYPE)
-            .get();
+            .lookupOrThrow(Registries.DIMENSION_TYPE);
         IdMap<Holder<DimensionType>> holderIdMap = registry.asHolderIdMap();
         for (int id = 0; id < holderIdMap.size(); id++) {
             Holder<DimensionType> holder = holderIdMap.byId(id);

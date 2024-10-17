@@ -3,15 +3,15 @@ package com.zenith.generator;
 import com.squareup.javapoet.CodeBlock;
 import com.zenith.mc.food.FoodData;
 import net.minecraft.core.DefaultedRegistry;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.ChorusFruitItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.consume_effects.ConsumeEffect;
+import net.minecraft.world.item.consume_effects.TeleportRandomlyConsumeEffect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,16 +30,27 @@ public class FoodRegistryGenerator extends RegistryGenerator<FoodData> {
             .filter(item -> item.components().has(DataComponents.FOOD))
             .forEach(food -> {
                 FoodProperties foodComponent = food.components().get(DataComponents.FOOD);
+                Consumable consumableComponent = food.components().get(DataComponents.CONSUMABLE);
                 int foodPoints = foodComponent.nutrition();
                 float saturationRatio = foodComponent.saturation() * 2.0F;
                 float saturation = foodPoints * saturationRatio;
-                List<Holder<MobEffect>> effects = foodComponent.effects().stream()
-                    .map(FoodProperties.PossibleEffect::effect)
-                    .map(MobEffectInstance::getEffect)
-                    .toList();
-                boolean isSafeFood = !effects.contains(MobEffects.POISON)
-                    && !effects.contains(MobEffects.HUNGER)
-                    && !(food instanceof ChorusFruitItem); // technically safe but better to avoid unexpected teleports
+                boolean isSafeFood = true;
+                if (consumableComponent != null) {
+                    List<ConsumeEffect> effects = consumableComponent.onConsumeEffects();
+                    for (var effect : effects) {
+                        if (effect instanceof ApplyStatusEffectsConsumeEffect applyEffect) {
+                            for (var effectInstance : applyEffect.effects()) {
+                                if (effectInstance.getEffect() == MobEffects.POISON || effectInstance.getEffect() == MobEffects.HUNGER) {
+                                    isSafeFood = false;
+                                    break;
+                                }
+                            }
+                        } else if (effect instanceof TeleportRandomlyConsumeEffect tpEffect) {
+                            isSafeFood = false;
+                            break;
+                        }
+                    }
+                }
                 var data = new FoodData(
                     registry.getId(food),
                     registry.getKey(food).getPath(),
