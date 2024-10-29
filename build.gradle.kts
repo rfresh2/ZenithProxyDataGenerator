@@ -36,7 +36,7 @@ dependencies {
     })
     modImplementation("net.fabricmc:fabric-loader:0.15.11")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.100.1+1.21")
-    implementation("com.squareup:javapoet:1.13.0")
+    implementation("com.palantir.javapoet:javapoet:0.5.0")
     implementation("com.github.rfresh2:MCProtocolLib:1.21.0.7") {
         exclude("*")
     }

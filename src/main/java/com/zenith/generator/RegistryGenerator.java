@@ -1,6 +1,6 @@
 package com.zenith.generator;
 
-import com.squareup.javapoet.*;
+import com.palantir.javapoet.*;
 import com.zenith.DataGenerator;
 import com.zenith.mc.Registry;
 import com.zenith.mc.RegistryData;

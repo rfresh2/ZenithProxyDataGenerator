@@ -1,6 +1,6 @@
 package com.zenith.generator;
 
-import com.squareup.javapoet.CodeBlock;
+import com.palantir.javapoet.CodeBlock;
 import com.zenith.extension.IBlockProperties;
 import com.zenith.mc.block.Block;
 import com.zenith.mc.block.BlockOffsetType;
