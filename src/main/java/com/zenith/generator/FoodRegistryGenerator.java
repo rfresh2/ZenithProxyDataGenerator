@@ -1,6 +1,6 @@
 package com.zenith.generator;
 
-import com.squareup.javapoet.CodeBlock;
+import com.palantir.javapoet.CodeBlock;
 import com.zenith.mc.food.FoodData;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.component.DataComponents;

@@ -1,6 +1,6 @@
 package com.zenith.generator;
 
-import com.squareup.javapoet.CodeBlock;
+import com.palantir.javapoet.CodeBlock;
 import com.zenith.mc.item.ItemData;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
