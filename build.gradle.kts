@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom") version "1.8-SNAPSHOT"
+    id("fabric-loom") version "1.9-SNAPSHOT"
 }
 
 group = "com.zenith"
@@ -31,18 +31,18 @@ loom {
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.21.3")
+    minecraft("com.mojang:minecraft:1.21.4")
     mappings(loom.layered {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-1.21:2024.07.28@zip")
     })
-    modImplementation("net.fabricmc:fabric-loader:0.16.7")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.107.0+1.21.3")
+    modImplementation("net.fabricmc:fabric-loader:0.16.9")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.110.5+1.21.4")
     implementation("com.palantir.javapoet:javapoet:0.5.0")
-    implementation("com.github.rfresh2:MCProtocolLib:1.21.3.1") {
+    implementation("com.github.rfresh2:MCProtocolLib:1.21.4.1") {
         exclude("*")
     }
-    implementation("com.zenith:ZenithProxy:1.21.3") {
+    implementation("com.zenith:ZenithProxy:1.21.4") {
         exclude("*")
     }
     val lombokVersion = "1.18.34"
