@@ -54,7 +54,7 @@ public class BlockCollisionShapes implements Generator {
 
             for (BlockState blockState : blockStates) {
                 VoxelShape blockShape = blockState.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO);
-                BlockOffsetType offsetType = ((IBlockProperties) blockState.getBlock().properties()).getOffsetType();
+                BlockOffsetType offsetType = ((IBlockProperties) blockState.getBlock().properties()).dg$getOffsetType();
                 if (offsetType != BlockOffsetType.NONE) {
                     Vec3 reverseOffset = blockState.getOffset(BlockPos.ZERO).reverse();
                     blockShape = blockShape.move(reverseOffset.x(), reverseOffset.y(), reverseOffset.z());

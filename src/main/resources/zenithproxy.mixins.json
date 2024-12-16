@@ -4,7 +4,10 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "AccessorBlockBehavior",
-    "MixinBlockProperties"
+    "MixinBlockProperties",
+    "MixinDiggerItem",
+    "MixinItem",
+    "MixinSwordItem"
   ],
   "injectors": {
     "defaultRequire": 1
