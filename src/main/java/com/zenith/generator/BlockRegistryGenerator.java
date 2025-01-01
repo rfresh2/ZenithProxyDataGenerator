@@ -39,6 +39,7 @@ public class BlockRegistryGenerator extends RegistryGenerator<Block> {
     final Supplier<Set<net.minecraft.world.level.block.Block>> NEEDS_DIAMOND_TOOL_BLOCKS = Suppliers.memoize(() -> getTaggedBlocks(net.minecraft.tags.BlockTags.NEEDS_DIAMOND_TOOL));
     final Supplier<Set<net.minecraft.world.level.block.Block>> NEEDS_IRON_TOOL_BLOCKS = Suppliers.memoize(() -> getTaggedBlocks(net.minecraft.tags.BlockTags.NEEDS_IRON_TOOL));
     final Supplier<Set<net.minecraft.world.level.block.Block>> NEEDS_STONE_TOOL_BLOCKS = Suppliers.memoize(() -> getTaggedBlocks(net.minecraft.tags.BlockTags.NEEDS_STONE_TOOL));
+    final Supplier<Set<net.minecraft.world.level.block.Block>> CLIMBABLE_BLOCKS = Suppliers.memoize(() -> getTaggedBlocks(net.minecraft.tags.BlockTags.CLIMBABLE));
 
     private @Nullable EnumSet<BlockTags> getZenithBlockTags(final net.minecraft.world.level.block.Block block) {
         var set = EnumSet.noneOf(BlockTags.class);
@@ -50,6 +51,7 @@ public class BlockRegistryGenerator extends RegistryGenerator<Block> {
         if (NEEDS_DIAMOND_TOOL_BLOCKS.get().contains(block)) set.add(BlockTags.NEEDS_DIAMOND_TOOL);
         if (NEEDS_IRON_TOOL_BLOCKS.get().contains(block)) set.add(BlockTags.NEEDS_IRON_TOOL);
         if (NEEDS_STONE_TOOL_BLOCKS.get().contains(block)) set.add(BlockTags.NEEDS_STONE_TOOL);
+        if (CLIMBABLE_BLOCKS.get().contains(block)) set.add(BlockTags.CLIMBABLE);
         if (set.isEmpty()) return null;
         return set;
     }
