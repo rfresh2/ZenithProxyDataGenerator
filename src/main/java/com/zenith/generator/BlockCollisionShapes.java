@@ -8,6 +8,7 @@ import com.zenith.DataGenerator;
 import com.zenith.extension.IBlockProperties;
 import com.zenith.mc.block.BlockOffsetType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.EmptyBlockGetter;
@@ -26,56 +27,72 @@ public class BlockCollisionShapes implements Generator {
     @Override
     public void generate() {
         var blockRegistry = BuiltInRegistries.BLOCK;
-        BlockShapesCache blockShapesCache = new BlockShapesCache();
+        BlockShapesCache collisionShapesCache = new BlockShapesCache((blockState -> blockState.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO)));
+        BlockShapesCache interactionShapesCache = new BlockShapesCache((blockState -> blockState.getShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO)));
 
-        blockRegistry.forEach(blockShapesCache::processBlock);
+        blockRegistry.forEach(collisionShapesCache::processBlock);
+        blockRegistry.forEach(interactionShapesCache::processBlock);
 
+        writeCache("blockCollisionShapes", collisionShapesCache, blockRegistry);
+        writeCache("blockInteractionShapes", interactionShapesCache, blockRegistry);
+    }
+
+    private void writeCache(String name, BlockShapesCache cache, DefaultedRegistry<Block> blockRegistry) {
         JsonObject resultObject = new JsonObject();
+        resultObject.add("blocks", cache.dumpBlockShapeIndices(blockRegistry));
+        resultObject.add("shapes", cache.dumpShapesObject());
 
-        resultObject.add("blocks", blockShapesCache.dumpBlockShapeIndices(blockRegistry));
-        resultObject.add("shapes", blockShapesCache.dumpShapesObject());
-
-        try (Writer out = new FileWriter(DataGenerator.outputFile("blockCollisionShapes.json"))) {
+        try (Writer out = new FileWriter(DataGenerator.outputFile(name + ".json"))) {
             DataGenerator.gson.toJson(resultObject, out);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        DataGenerator.LOG.info("Dumped blockCollisionShapes.json");
+        DataGenerator.LOG.info("Dumped {}.json", name);
+    }
+
+    @FunctionalInterface
+    interface ShapeAccessor {
+        VoxelShape getCollisionShape(BlockState blockState);
     }
 
     private static class BlockShapesCache {
-        public LinkedHashMap<VoxelShape, Integer> uniqueBlockShapes = new LinkedHashMap<>();
-        public LinkedHashMap<Block, List<Integer>> blockCollisionShapes = new LinkedHashMap<>();
+        private final ShapeAccessor shapeAccessor;
+        public LinkedHashMap<VoxelShape, Integer> shapeToShapeId = new LinkedHashMap<>();
+        public LinkedHashMap<Block, List<Integer>> blockToShapes = new LinkedHashMap<>();
         private int lastCollisionShapeId = 0;
+
+        public BlockShapesCache(ShapeAccessor shapeAccessor) {
+            this.shapeAccessor = shapeAccessor;
+        }
 
         public void processBlock(Block block) {
             List<BlockState> blockStates = block.getStateDefinition().getPossibleStates();
             List<Integer> blockCollisionShapes = new ArrayList<>();
 
             for (BlockState blockState : blockStates) {
-                VoxelShape blockShape = blockState.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO);
+                VoxelShape blockShape = shapeAccessor.getCollisionShape(blockState);
                 BlockOffsetType offsetType = ((IBlockProperties) blockState.getBlock().properties()).dg$getOffsetType();
                 if (offsetType != BlockOffsetType.NONE) {
                     Vec3 reverseOffset = blockState.getOffset(BlockPos.ZERO).reverse();
                     blockShape = blockShape.move(reverseOffset.x(), reverseOffset.y(), reverseOffset.z());
                 }
 
-                Integer blockShapeIndex = uniqueBlockShapes.get(blockShape);
+                Integer blockShapeIndex = shapeToShapeId.get(blockShape);
 
                 if (blockShapeIndex == null) {
                     blockShapeIndex = lastCollisionShapeId++;
-                    uniqueBlockShapes.put(blockShape, blockShapeIndex);
+                    shapeToShapeId.put(blockShape, blockShapeIndex);
                 }
                 blockCollisionShapes.add(blockShapeIndex);
             }
 
-            this.blockCollisionShapes.put(block, blockCollisionShapes);
+            this.blockToShapes.put(block, blockCollisionShapes);
         }
 
         public JsonObject dumpBlockShapeIndices(Registry<Block> blockRegistry) {
             JsonObject resultObject = new JsonObject();
 
-            for (var entry : blockCollisionShapes.entrySet()) {
+            for (var entry : blockToShapes.entrySet()) {
                 List<Integer> blockCollisions = entry.getValue();
                 long distinctShapesCount = blockCollisions.stream().distinct().count();
                 JsonElement blockCollision;
@@ -97,7 +114,7 @@ public class BlockCollisionShapes implements Generator {
         public JsonObject dumpShapesObject() {
             JsonObject shapesObject = new JsonObject();
 
-            for (var entry : uniqueBlockShapes.entrySet()) {
+            for (var entry : shapeToShapeId.entrySet()) {
                 JsonArray boxesArray = new JsonArray();
                 entry.getKey().forAllBoxes((x1, y1, z1, x2, y2, z2) -> {
                     JsonArray oneBoxJsonArray = new JsonArray();
