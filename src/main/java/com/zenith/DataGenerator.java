@@ -33,8 +33,8 @@ public class DataGenerator implements DedicatedServerModInitializer {
         new MapColorIdToColor(),
         new BlockRegistryGenerator(),
         new ItemRegistryGenerator(),
-        new WaterLoggedStatesGenerator()
         new WaterLoggedStatesGenerator(),
+        new SlabDataGenerator(),
         new FluidGenerator()
     );
     public static MinecraftServer SERVER_INSTANCE;
