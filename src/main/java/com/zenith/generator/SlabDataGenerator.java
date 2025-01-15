@@ -14,28 +14,35 @@ import java.util.List;
 import static com.zenith.DataGenerator.LOG;
 import static net.minecraft.world.level.block.Block.getId;
 
-public class WaterLoggedStatesGenerator implements Generator {
+public class SlabDataGenerator implements Generator {
     @Override
     public void generate() {
-        var list = new IntArrayList();
+        var topSlabs = new IntArrayList();
+        var bottomSlabs = new IntArrayList();
+        var doubleSlabs = new IntArrayList();
+
         var blockRegistry = BuiltInRegistries.BLOCK;
         blockRegistry.forEach(block -> {
             List<BlockState> blockStates = block.getStateDefinition().getPossibleStates();
             for (var state : blockStates) {
-                if (!state.hasProperty(BlockStateProperties.WATERLOGGED)) continue;
+                if (!state.hasProperty(BlockStateProperties.SLAB_TYPE)) continue;
                 int id = getId(state);
-                var waterLoggedState = state.getValue(BlockStateProperties.WATERLOGGED);
-                if (waterLoggedState) {
-                    list.add(id);
+                var slabState = state.getValue(BlockStateProperties.SLAB_TYPE);
+                switch (slabState) {
+                    case TOP -> topSlabs.add(id);
+                    case BOTTOM -> bottomSlabs.add(id);
+                    case DOUBLE -> doubleSlabs.add(id);
                 }
             }
         });
 
-        try (Writer out = new FileWriter(DataGenerator.outputFile("waterloggedBlockStateIds.json"))) {
-            DataGenerator.gson.toJson(list, out);
+        try (Writer out = new FileWriter(DataGenerator.outputFile("slabBlockStateIds.json"))) {
+            DataGenerator.gson.toJson(new SlabData(topSlabs, bottomSlabs, doubleSlabs), out);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        LOG.info("Dumped waterloggedBlockStateIds.json");
+        LOG.info("Dumped slabBlockStateIds.json");
     }
+
+    record SlabData(IntArrayList topSlabs, IntArrayList bottomSlabs, IntArrayList doubleSlabs) {}
 }
