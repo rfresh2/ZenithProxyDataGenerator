@@ -7,6 +7,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class EntityRegistryGenerator extends RegistryGenerator<EntityData> {
                 entity.getDimensions().height(),
                 instance == null ? true : instance.isAttackable(),
                 instance == null ? true : instance.isPickable(), // TODO: there is much more logic in the entity class hierarchy about when this is true
+                instance == null ? true : instance instanceof LivingEntity,
                 org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType.valueOf(
                     registryKey.getPath().toUpperCase())
             ));
@@ -44,7 +46,7 @@ public class EntityRegistryGenerator extends RegistryGenerator<EntityData> {
 
     @Override
     public CodeBlock dataInitializer(final EntityData data) {
-        return CodeBlock.of("new $T($L, $S, $Lf, $Lf, $L, $L, $T.$L)",
+        return CodeBlock.of("new $T($L, $S, $Lf, $Lf, $L, $L, $L, $T.$L)",
                             EntityData.class,
                             data.id(),
                             data.name(),
@@ -52,6 +54,7 @@ public class EntityRegistryGenerator extends RegistryGenerator<EntityData> {
                             data.height(),
                             data.attackable(),
                             data.pickable(),
+                            data.livingEntity(),
                             org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType.class,
                             data.mcplType()
         );
