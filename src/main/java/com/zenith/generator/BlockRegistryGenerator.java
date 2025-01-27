@@ -71,10 +71,13 @@ public class BlockRegistryGenerator extends RegistryGenerator<Block> {
                 .orElse("")
                 .toUpperCase(Locale.ENGLISH);
             var mcplBlockEntityType = blockEntityTypeStr.isEmpty() ? null : BlockEntityType.valueOf(blockEntityTypeStr);
+            boolean isSolidBlock = block.getStateDefinition().getPossibleStates()
+                .stream()
+                .anyMatch(state -> !state.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO).isEmpty());
             Block data = new Block(
                 blockRegistry.getId(block),
                 registryKey.getPath(),
-                !block.defaultBlockState().getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO).isEmpty(),
+                isSolidBlock,
                 net.minecraft.world.level.block.Block.getId(blockStates.getFirst()),
                 net.minecraft.world.level.block.Block.getId(blockStates.getLast()),
                 block.defaultMapColor().id,
