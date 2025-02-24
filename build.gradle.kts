@@ -6,17 +6,15 @@ group = "com.zenith"
 version = "1.0.0"
 
 repositories {
-    mavenLocal {
+    maven("https://maven.parchmentmc.org")
+    maven("https://maven.2b2t.vc/releases") {
         content {
+            includeGroupByRegex("com.github.rfresh2.*")
             includeGroup("com.zenith")
-            includeGroup("com.github.rfresh2:MCProtocolLib")
         }
     }
     mavenCentral()
-    maven("https://maven.2b2t.vc/releases") {
-        content { includeGroupByRegex("com.github.rfresh2.*") }
-    }
-    maven("https://maven.parchmentmc.org")
+    mavenLocal()
 }
 
 loom {
@@ -39,11 +37,11 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:0.16.9")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.110.5+1.21.4")
     implementation("com.palantir.javapoet:javapoet:0.5.0")
-    implementation("com.github.rfresh2:MCProtocolLib:1.21.4.1") {
-        exclude("*")
+    implementation("com.github.rfresh2:MCProtocolLib:1.21.4.11") {
+        isTransitive = false
     }
-    implementation("com.zenith:ZenithProxy:1.21.4") {
-        exclude("*")
+    implementation("com.zenith:ZenithProxy:1.21.4-SNAPSHOT") {
+        isTransitive = false
     }
     val lombokVersion = "1.18.34"
     compileOnly("org.projectlombok:lombok:$lombokVersion")
