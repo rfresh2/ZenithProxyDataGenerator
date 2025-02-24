@@ -27,17 +27,17 @@ loom {
         }
     }
 }
-val lombokVersion = "1.18.34"
+val lombokVersion = "1.18.36"
 
 dependencies {
     minecraft("com.mojang:minecraft:1.21")
     mappings(loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21:2024.07.28@zip")
+        parchment("org.parchmentmc.data:parchment-1.21:2024.11.10@zip")
     })
     modImplementation("net.fabricmc:fabric-loader:0.15.11")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.100.1+1.21")
-    implementation("com.palantir.javapoet:javapoet:0.5.0")
+    implementation("com.palantir.javapoet:javapoet:0.6.0")
     implementation("com.github.rfresh2:MCProtocolLib:1.21.0.30") {
         isTransitive = false
     }
