@@ -46,6 +46,7 @@ public class FoodRegistryGenerator extends RegistryGenerator<FoodData> {
                     food.getDefaultMaxStackSize(),
                     foodPoints,
                     saturation,
+                    foodComponent.canAlwaysEat(),
                     isSafeFood
                 );
                 foodList.add(data);
@@ -56,13 +57,14 @@ public class FoodRegistryGenerator extends RegistryGenerator<FoodData> {
     @Override
     public CodeBlock dataInitializer(final FoodData data) {
         return CodeBlock.of(
-            "new $T($L, $S, $L, $Lf, $Lf, $L)",
+            "new $T($L, $S, $L, $Lf, $Lf, $L, $L)",
             FoodData.class,
             data.id(),
             data.name(),
             data.stackSize(),
             data.foodPoints(),
             data.saturation(),
+            data.canAlwaysEat(),
             data.isSafeFood()
         );
     }
