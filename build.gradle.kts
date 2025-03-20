@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom") version "1.7-SNAPSHOT"
+    id("fabric-loom") version "1.10-SNAPSHOT"
 }
 
 group = "com.zenith"
@@ -35,7 +35,7 @@ dependencies {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-1.21:2024.11.10@zip")
     })
-    modImplementation("net.fabricmc:fabric-loader:0.15.11")
+    modImplementation("net.fabricmc:fabric-loader:0.16.10")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.100.1+1.21")
     implementation("com.palantir.javapoet:javapoet:0.6.0")
     implementation("com.github.rfresh2:MCProtocolLib:1.21.0.30") {
