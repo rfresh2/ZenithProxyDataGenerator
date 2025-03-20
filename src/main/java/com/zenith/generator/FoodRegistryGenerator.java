@@ -10,8 +10,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.ChorusFruitItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,10 @@ public class FoodRegistryGenerator extends RegistryGenerator<FoodData> {
                     .toList();
                 boolean isSafeFood = !effects.contains(MobEffects.POISON)
                     && !effects.contains(MobEffects.HUNGER)
-                    && !(food instanceof ChorusFruitItem); // technically safe but better to avoid unexpected teleports
+                    && food != Items.CHORUS_FRUIT // technically safe but better to avoid unexpected teleports
+                    && food != Items.OMINOUS_BOTTLE // these do have nutrition but generally shouldn't normally be eaten for health/hunger
+                    && food != Items.HONEY_BOTTLE
+                    && food != Items.TROPICAL_FISH;
                 var data = new FoodData(
                     registry.getId(food),
                     registry.getKey(food).getPath(),
