@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom") version "1.9-SNAPSHOT"
+    id("fabric-loom") version "1.10-SNAPSHOT"
 }
 
 group = "com.zenith"
@@ -44,7 +44,6 @@ dependencies {
     implementation("com.zenith:ZenithProxy:1.21.4-SNAPSHOT") {
         isTransitive = false
     }
-    val lombokVersion = "1.18.34"
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
