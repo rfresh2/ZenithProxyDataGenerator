@@ -8,6 +8,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.item.consume_effects.ConsumeEffect;
@@ -51,6 +52,9 @@ public class FoodRegistryGenerator extends RegistryGenerator<FoodData> {
                         }
                     }
                 }
+                isSafeFood = isSafeFood
+                    && food != Items.HONEY_BOTTLE
+                    && food != Items.TROPICAL_FISH;
                 var data = new FoodData(
                     registry.getId(food),
                     registry.getKey(food).getPath(),
