@@ -5,9 +5,8 @@
   "mixins": [
     "AccessorBlockBehavior",
     "MixinBlockProperties",
-    "MixinDiggerItem",
     "MixinItem",
-    "MixinSwordItem"
+    "MixinItemProperties"
   ],
   "injectors": {
     "defaultRequire": 1

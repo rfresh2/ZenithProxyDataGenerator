@@ -8,11 +8,13 @@ import com.zenith.mc.item.ToolTier;
 import com.zenith.mc.item.ToolType;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ToolMaterial;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ItemRegistryGenerator extends RegistryGenerator<ItemData> {
     public ItemRegistryGenerator() {
@@ -34,24 +36,9 @@ public class ItemRegistryGenerator extends RegistryGenerator<ItemData> {
         DefaultedRegistry<Item> registry = BuiltInRegistries.ITEM;
 
         registry.stream().forEach(item -> {
-            ToolType toolType = null;
-            ToolTier toolTier = null;
-            if (item instanceof AxeItem i) {
-                toolType = ToolType.AXE;
-                toolTier = tierMap.get(((IItemProperties) i).getToolMaterial());
-            } else if (item instanceof HoeItem i) {
-                toolType = ToolType.HOE;
-                toolTier = tierMap.get(((IItemProperties) i).getToolMaterial());
-            } else if (item instanceof PickaxeItem i) {
-                toolType = ToolType.PICKAXE;
-                toolTier = tierMap.get(((IItemProperties) i).getToolMaterial());
-            } else if (item instanceof ShovelItem i) {
-                toolType = ToolType.SHOVEL;
-                toolTier = tierMap.get(((IItemProperties) i).getToolMaterial());
-            } else if (item instanceof SwordItem i) {
-                toolType = ToolType.SWORD;
-                toolTier = tierMap.get(((IItemProperties) i).getToolMaterial());
-            }
+            ToolType toolType = ((IItemProperties) item).getToolType();
+            ToolMaterial material = ((IItemProperties) item).getToolMaterial();
+            ToolTier toolTier = Optional.ofNullable(material).map(tierMap::get).orElse(null);
             ToolTag toolTag = null;
             if (toolType != null && toolTier != null) {
                 toolTag = new ToolTag(toolTier, toolType);
