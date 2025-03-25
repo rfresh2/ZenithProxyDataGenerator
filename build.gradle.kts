@@ -30,13 +30,13 @@ loom {
 val lombokVersion = "1.18.36"
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.21.5-rc1")
+    minecraft("com.mojang:minecraft:1.21.5")
     mappings(loom.layered {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-1.21.4:2025.03.16@zip")
     })
     modImplementation("net.fabricmc:fabric-loader:0.16.10")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.119.4+1.21.5")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.119.5+1.21.5")
     implementation("com.palantir.javapoet:javapoet:0.6.0")
     implementation("com.github.rfresh2:MCProtocolLib:1.21.5.1") {
         isTransitive = false
