@@ -27,7 +27,7 @@ loom {
         }
     }
 }
-val lombokVersion = "1.18.36"
+val lombokVersion = "1.18.38"
 
 dependencies {
     minecraft("com.mojang:minecraft:1.21")
