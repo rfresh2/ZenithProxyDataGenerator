@@ -27,7 +27,7 @@ loom {
         }
     }
 }
-val lombokVersion = "1.18.36"
+val lombokVersion = "1.18.38"
 
 dependencies {
     minecraft("com.mojang:minecraft:1.21")
@@ -37,7 +37,7 @@ dependencies {
     })
     modImplementation("net.fabricmc:fabric-loader:0.16.10")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.100.1+1.21")
-    implementation("com.palantir.javapoet:javapoet:0.6.0")
+    implementation("com.palantir.javapoet:javapoet:0.7.0")
     implementation("com.github.rfresh2:MCProtocolLib:1.21.0.30") {
         isTransitive = false
     }
