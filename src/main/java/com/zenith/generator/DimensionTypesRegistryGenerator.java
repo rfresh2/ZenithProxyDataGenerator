@@ -12,7 +12,7 @@ import net.minecraft.world.level.dimension.DimensionType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DimensionTypesRegistryGenerator extends RegistryGenerator<DimensionData> {
+public class DimensionTypesRegistryGenerator extends DynamicRegistryGenerator<DimensionData> {
     public DimensionTypesRegistryGenerator() {
         super(DimensionData.class, DimensionData.class.getPackage().getName(), "DimensionRegistry");
     }

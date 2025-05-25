@@ -10,7 +10,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnchantmentRegistryGenerator extends RegistryGenerator<EnchantmentData> {
+public class EnchantmentRegistryGenerator extends DynamicRegistryGenerator<EnchantmentData> {
 
     public EnchantmentRegistryGenerator() {
         super(EnchantmentData.class, EnchantmentData.class.getPackage().getName(), "EnchantmentRegistry");

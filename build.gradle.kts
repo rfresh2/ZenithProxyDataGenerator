@@ -36,9 +36,9 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-1.21.4:2025.03.16@zip")
     })
     modImplementation("net.fabricmc:fabric-loader:0.16.10")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.119.5+1.21.5")
-    implementation("com.palantir.javapoet:javapoet:0.6.0")
-    implementation("com.github.rfresh2:MCProtocolLib:1.21.5.10") {
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.124.2+1.21.5")
+    implementation("com.palantir.javapoet:javapoet:0.7.0")
+    implementation("com.github.rfresh2:MCProtocolLib:1.21.5.13") {
         isTransitive = false
     }
     implementation("com.zenith:ZenithProxy:1.21.5-SNAPSHOT") {
