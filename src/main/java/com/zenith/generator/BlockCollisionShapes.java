@@ -41,6 +41,7 @@ public class BlockCollisionShapes implements Generator {
         JsonObject resultObject = new JsonObject();
         resultObject.add("blocks", cache.dumpBlockShapeIndices(blockRegistry));
         resultObject.add("shapes", cache.dumpShapesObject());
+        resultObject.add("boxes", cache.dumpBoxShapeIndices());
 
         try (Writer out = new FileWriter(DataGenerator.outputFile(name + ".json"))) {
             DataGenerator.gson.toJson(resultObject, out);
@@ -55,11 +56,16 @@ public class BlockCollisionShapes implements Generator {
         VoxelShape getCollisionShape(BlockState blockState);
     }
 
+    record Box(double x1, double x2, double y1, double y2, double z1, double z2) { }
+
     private static class BlockShapesCache {
         private final ShapeAccessor shapeAccessor;
         public LinkedHashMap<VoxelShape, Integer> shapeToShapeId = new LinkedHashMap<>();
         public LinkedHashMap<Block, List<Integer>> blockToShapes = new LinkedHashMap<>();
+        public LinkedHashMap<VoxelShape, List<Box>> shapeToBoxes = new LinkedHashMap<>();
+        public LinkedHashMap<Box, Integer> boxToBoxId = new LinkedHashMap<>();
         private int lastCollisionShapeId = 0;
+        private int lastBoxId = 0;
 
         public BlockShapesCache(ShapeAccessor shapeAccessor) {
             this.shapeAccessor = shapeAccessor;
@@ -76,6 +82,15 @@ public class BlockCollisionShapes implements Generator {
                     Vec3 reverseOffset = blockState.getOffset(EmptyBlockGetter.INSTANCE, BlockPos.ZERO).reverse();
                     blockShape = blockShape.move(reverseOffset.x(), reverseOffset.y(), reverseOffset.z());
                 }
+                List<Box> boxes = getBoxes(blockShape);
+                for (Box box : boxes) {
+                    Integer boxId = boxToBoxId.get(box);
+                    if (boxId == null) {
+                        boxId = lastBoxId++;
+                        boxToBoxId.put(box, boxId);
+                    }
+                }
+                shapeToBoxes.put(blockShape, boxes);
 
                 Integer blockShapeIndex = shapeToShapeId.get(blockShape);
 
@@ -87,6 +102,15 @@ public class BlockCollisionShapes implements Generator {
             }
 
             this.blockToShapes.put(block, blockCollisionShapes);
+        }
+
+        private List<Box> getBoxes(VoxelShape shape) {
+            List<Box> boxes = new ArrayList<>();
+            shape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> {
+                Box box = new Box(x1, x2, y1, y2, z1, z2);
+                boxes.add(box);
+            });
+            return boxes;
         }
 
         public JsonObject dumpBlockShapeIndices(Registry<Block> blockRegistry) {
@@ -116,22 +140,37 @@ public class BlockCollisionShapes implements Generator {
 
             for (var entry : shapeToShapeId.entrySet()) {
                 JsonArray boxesArray = new JsonArray();
-                entry.getKey().forAllBoxes((x1, y1, z1, x2, y2, z2) -> {
-                    JsonArray oneBoxJsonArray = new JsonArray();
-
-                    oneBoxJsonArray.add(x1);
-                    oneBoxJsonArray.add(y1);
-                    oneBoxJsonArray.add(z1);
-
-                    oneBoxJsonArray.add(x2);
-                    oneBoxJsonArray.add(y2);
-                    oneBoxJsonArray.add(z2);
-
-                    boxesArray.add(oneBoxJsonArray);
-                });
+                List<Integer> shapeToBoxIds = new ArrayList<>();
+                List<Box> boxes = shapeToBoxes.get(entry.getKey());
+                for (Box box : boxes) {
+                    int boxId = boxToBoxId.get(box);
+                    shapeToBoxIds.add(boxId);
+                }
+                for (int boxId : shapeToBoxIds) {
+                    boxesArray.add(boxId);
+                }
                 shapesObject.add(Integer.toString(entry.getValue()), boxesArray);
             }
             return shapesObject;
+        }
+
+        public JsonObject dumpBoxShapeIndices() {
+            JsonObject boxShapeIndices = new JsonObject();
+
+            for (var entry : boxToBoxId.entrySet()) {
+                Box box = entry.getKey();
+                JsonArray boxArray = new JsonArray();
+                boxArray.add(box.x1());
+                boxArray.add(box.y1());
+                boxArray.add(box.z1());
+                boxArray.add(box.x2());
+                boxArray.add(box.y2());
+                boxArray.add(box.z2());
+
+                boxShapeIndices.add(Integer.toString(entry.getValue()), boxArray);
+            }
+
+            return boxShapeIndices;
         }
     }
 }
