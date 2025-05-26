@@ -6,6 +6,7 @@ group = "com.zenith"
 version = "1.0.0"
 
 repositories {
+    mavenLocal()
     maven("https://maven.parchmentmc.org")
     maven("https://maven.2b2t.vc/releases") {
         content {
@@ -41,6 +42,7 @@ dependencies {
     implementation("com.github.rfresh2:MCProtocolLib:1.21.5.13") {
         isTransitive = false
     }
+    implementation("org.cloudburstmc.math:immutable:2.0")
     implementation("com.zenith:ZenithProxy:1.21.5-SNAPSHOT") {
         isTransitive = false
     }
