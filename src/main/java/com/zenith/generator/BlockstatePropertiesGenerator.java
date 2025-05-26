@@ -12,54 +12,47 @@ import net.minecraft.core.registries.BuiltInRegistries;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockstatePropertiesGenerator implements Generator {
     @Override
     public void generate() {
         final String className = "BlockStatePropertyRegistry";
         final String packageName = "com.zenith.mc.block";
-        Int2ObjectMap<Map<String, String>> blockIdToProperties = new Int2ObjectLinkedOpenHashMap<>();
+        Int2ObjectMap<List<String>> blockIdToProperties = new Int2ObjectLinkedOpenHashMap<>();
 
         var blockRegistry = BuiltInRegistries.BLOCK;
         blockRegistry.forEach(block -> {
             int id = blockRegistry.getId(block);
-            var defaultState = block.defaultBlockState();
-
-            Map<String, String> propertyFieldNameToDefaultValue = new LinkedHashMap<>();
+            List<String> propertyFieldNames = new ArrayList<>();
             for (var prop : block.getStateDefinition().getProperties()) {
-                String value = defaultState.getValue(prop).toString();
                 String fieldName = toStaticPropertyFieldName(prop);
                 if (getZenithProperty(fieldName) == null) {
                     throw new RuntimeException("Missing ZenithProxy property field: " + fieldName + " for property: " + prop.getName());
                 }
-                propertyFieldNameToDefaultValue.put(fieldName, value);
+                propertyFieldNames.add(fieldName);
             }
-            blockIdToProperties.put(id, propertyFieldNameToDefaultValue);
+            blockIdToProperties.put(id, propertyFieldNames);
         });
 
         ParameterizedTypeName mapFieldType = ParameterizedTypeName.get(Int2ObjectMap.class, BlockStatePropertyDefinition.class);
         var mapFieldSpec = FieldSpec.builder(mapFieldType, "STATES")
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-            .initializer("new $T<>()", Int2ObjectOpenHashMap.class)
+            .initializer("new $T<>($L)", Int2ObjectOpenHashMap.class, (int) blockRegistry.stream().count())
             .build();
 
         int count = 0;
         var mapInitializerBlock = CodeBlock.builder();
         for (var entry : blockIdToProperties.int2ObjectEntrySet()) {
             int blockId = entry.getIntKey();
-            Map<String, String> properties = entry.getValue();
-            if (properties.isEmpty()) continue;
+            List<String> propertyFieldNames = entry.getValue();
+            if (propertyFieldNames.isEmpty()) continue;
             var statementBuilder = CodeBlock.builder()
                 .add("$N.put($L, new $T(", mapFieldSpec, blockId, BlockStatePropertyDefinition.class);
-            for (var iterator = properties.entrySet().iterator(); iterator.hasNext(); ) {
-                final var propEntry = iterator.next();
-                String fieldName = propEntry.getKey();
-                String value = propEntry.getValue();
-                statementBuilder.add("$L, $S", fieldName, value);
+            for (var iterator = propertyFieldNames.iterator(); iterator.hasNext(); ) {
+                final var fieldName = iterator.next();
+                statementBuilder.add("$L", fieldName);
                 if (iterator.hasNext()) {
                     statementBuilder.add(", ");
                 }
@@ -74,7 +67,6 @@ public class BlockstatePropertiesGenerator implements Generator {
             .addField(mapFieldSpec)
             .addStaticBlock(mapInitializerBlock.build())
             .build();
-        String[] propertyFieldNames = Arrays.stream(BlockStateProperties.class.getFields()).map(Field::getName).toList().toArray(String[]::new);
         var javaFile = JavaFile
             .builder(packageName, typeSpec)
             .addStaticImport(BlockStateProperties.class, "*")
