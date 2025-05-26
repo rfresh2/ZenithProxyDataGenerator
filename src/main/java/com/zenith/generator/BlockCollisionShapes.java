@@ -161,10 +161,10 @@ public class BlockCollisionShapes implements Generator {
                 Box box = entry.getKey();
                 JsonArray boxArray = new JsonArray();
                 boxArray.add(box.x1());
-                boxArray.add(box.y1());
-                boxArray.add(box.z1());
                 boxArray.add(box.x2());
+                boxArray.add(box.y1());
                 boxArray.add(box.y2());
+                boxArray.add(box.z1());
                 boxArray.add(box.z2());
 
                 boxShapeIndices.add(Integer.toString(entry.getValue()), boxArray);
