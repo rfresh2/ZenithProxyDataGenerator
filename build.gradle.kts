@@ -8,12 +8,7 @@ version = "1.0.0"
 repositories {
     mavenLocal()
     maven("https://maven.parchmentmc.org")
-    maven("https://maven.2b2t.vc/releases") {
-        content {
-            includeGroupByRegex("com.github.rfresh2.*")
-            includeGroup("com.zenith")
-        }
-    }
+    maven("https://maven.2b2t.vc/releases")
     mavenCentral()
     mavenLocal()
 }
