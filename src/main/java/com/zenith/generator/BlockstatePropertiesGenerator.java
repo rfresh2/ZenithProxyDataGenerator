@@ -3,7 +3,7 @@ package com.zenith.generator;
 import com.palantir.javapoet.*;
 import com.zenith.DataGenerator;
 import com.zenith.mc.block.BlockStatePropertyDefinition;
-import com.zenith.mc.block.properties.BlockStateProperties;
+import com.zenith.mc.block.properties.api.BlockStateProperties;
 import com.zenith.mc.block.properties.api.Property;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
