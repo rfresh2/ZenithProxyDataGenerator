@@ -6,13 +6,10 @@ group = "com.zenith"
 version = "1.0.0"
 
 repositories {
+//    mavenLocal()
     maven("https://maven.parchmentmc.org")
-    maven("https://maven.2b2t.vc/releases") {
-        content {
-            includeGroupByRegex("com.github.rfresh2.*")
-            includeGroup("com.zenith")
-        }
-    }
+    maven("https://maven.2b2t.vc/releases")
+    maven("https://maven.2b2t.vc/remote")
     mavenCentral()
     mavenLocal()
 }
@@ -27,7 +24,7 @@ loom {
         }
     }
 }
-val lombokVersion = "1.18.36"
+val lombokVersion = "1.18.38"
 
 dependencies {
     minecraft("com.mojang:minecraft:1.21.4")
@@ -37,10 +34,11 @@ dependencies {
     })
     modImplementation("net.fabricmc:fabric-loader:0.16.10")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.110.5+1.21.4")
-    implementation("com.palantir.javapoet:javapoet:0.6.0")
-    implementation("com.github.rfresh2:MCProtocolLib:1.21.4.16") {
+    implementation("com.palantir.javapoet:javapoet:0.7.0")
+    implementation("com.github.rfresh2:MCProtocolLib:1.21.4.23") {
         isTransitive = false
     }
+    implementation("org.cloudburstmc.math:immutable:2.0")
     implementation("com.zenith:ZenithProxy:1.21.4-SNAPSHOT") {
         isTransitive = false
     }
