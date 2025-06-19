@@ -6,7 +6,7 @@ group = "com.zenith"
 version = "1.0.0"
 
 repositories {
-//    mavenLocal()
+    mavenLocal()
     maven("https://maven.parchmentmc.org")
     maven("https://maven.2b2t.vc/releases")
     maven("https://maven.2b2t.vc/remote")
@@ -39,7 +39,7 @@ dependencies {
         isTransitive = false
     }
     implementation("org.cloudburstmc.math:immutable:2.0")
-    implementation("com.zenith:ZenithProxy:1.21.5-SNAPSHOT") {
+    implementation("com.zenith:ZenithProxy:1.21.6-SNAPSHOT") {
         isTransitive = false
     }
     compileOnly("org.projectlombok:lombok:$lombokVersion")
