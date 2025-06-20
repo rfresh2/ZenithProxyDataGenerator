@@ -7,10 +7,8 @@ import com.zenith.mc.block.Block;
 import com.zenith.mc.block.BlockOffsetType;
 import com.zenith.mc.block.BlockTags;
 import com.zenith.mixin.AccessorBlockBehavior;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.geysermc.mcprotocollib.protocol.data.game.level.block.BlockEntityType;
 import org.jetbrains.annotations.Nullable;
@@ -71,13 +69,10 @@ public class BlockRegistryGenerator extends RegistryGenerator<Block> {
                 .orElse("")
                 .toUpperCase(Locale.ENGLISH);
             var mcplBlockEntityType = blockEntityTypeStr.isEmpty() ? null : BlockEntityType.valueOf(blockEntityTypeStr);
-            boolean isSolidBlock = block.getStateDefinition().getPossibleStates()
-                .stream()
-                .anyMatch(state -> !state.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO).isEmpty());
             Block data = new Block(
                 blockRegistry.getId(block),
                 registryKey.getPath(),
-                isSolidBlock,
+                block.defaultBlockState().isSolid(),
                 net.minecraft.world.level.block.Block.getId(blockStates.getFirst()),
                 net.minecraft.world.level.block.Block.getId(blockStates.getLast()),
                 block.defaultMapColor().id,
