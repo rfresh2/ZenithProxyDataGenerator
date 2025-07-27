@@ -27,19 +27,19 @@ loom {
 val lombokVersion = "1.18.38"
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.21.7")
+    minecraft("com.mojang:minecraft:1.21.8")
     mappings(loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21.6:2025.06.29@zip")
+        parchment("org.parchmentmc.data:parchment-1.21.8:2025.07.18@zip")
     })
     modImplementation("net.fabricmc:fabric-loader:0.16.14")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.128.0+1.21.7")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.129.0+1.21.8")
     implementation("com.palantir.javapoet:javapoet:0.7.0")
-    implementation("com.github.rfresh2:MCProtocolLib:1.21.6.2") {
+    implementation("com.github.rfresh2:MCProtocolLib:1.21.8.1") {
         isTransitive = false
     }
     implementation("org.cloudburstmc.math:immutable:2.0")
-    implementation("com.zenith:ZenithProxy:1.21.6-SNAPSHOT") {
+    implementation("com.zenith:ZenithProxy:1.21.8-SNAPSHOT") {
         isTransitive = false
     }
     compileOnly("org.projectlombok:lombok:$lombokVersion")
