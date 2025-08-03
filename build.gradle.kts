@@ -6,7 +6,7 @@ group = "com.zenith"
 version = "1.0.0"
 
 repositories {
-//    mavenLocal()
+    mavenLocal()
     maven("https://maven.parchmentmc.org")
     maven("https://maven.2b2t.vc/releases")
     maven("https://maven.2b2t.vc/remote")
