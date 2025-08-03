@@ -34,6 +34,7 @@ public class EntityRegistryGenerator extends RegistryGenerator<EntityData> {
                 instance == null ? true : instance.isPickable(), // TODO: there is much more logic in the entity class hierarchy about when this is true
                 instance == null ? true : instance instanceof LivingEntity,
                 instance == null ? true : instance instanceof AgeableMob,
+                instance == null ? true : instance.blocksBuilding,
                 org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType.valueOf(
                     registryKey.getPath().toUpperCase())
             ));
@@ -45,7 +46,7 @@ public class EntityRegistryGenerator extends RegistryGenerator<EntityData> {
 
     @Override
     public CodeBlock dataInitializer(final EntityData data) {
-        return CodeBlock.of("new $T($L, $S, $Lf, $Lf, $L, $L, $L, $L, $T.$L)",
+        return CodeBlock.of("new $T($L, $S, $Lf, $Lf, $L, $L, $L, $L, $L, $T.$L)",
                             EntityData.class,
                             data.id(),
                             data.name(),
@@ -55,6 +56,7 @@ public class EntityRegistryGenerator extends RegistryGenerator<EntityData> {
                             data.pickable(),
                             data.livingEntity(),
                             data.ageableMob(),
+                            data.blocksBuilding(),
                             org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType.class,
                             data.mcplType()
         );
