@@ -21,18 +21,22 @@ public class EnchantmentRegistryGenerator extends DynamicRegistryGenerator<Encha
         final List<EnchantmentData> enchants = new ArrayList<>();
         Registry<Enchantment> registry = DataGenerator.SERVER_INSTANCE.registryAccess()
             .lookupOrThrow(Registries.ENCHANTMENT);
-        registry.stream().forEach(enchant -> enchants.add(new EnchantmentData(
-            registry.getId(enchant),
-            registry.getKey(enchant).getPath()
-        )));
+        registry.stream().forEach(enchant ->
+            enchants.add(new EnchantmentData(
+                registry.getId(enchant),
+                registry.getKey(enchant).getPath(),
+                enchant.getMaxLevel()
+            )));
         return enchants;
     }
 
     @Override
     public CodeBlock dataInitializer(final EnchantmentData enchant) {
-        return CodeBlock.of("new $T($L, $S)",
-                            this.dataType,
-                            enchant.id(),
-                            enchant.name());
+        return CodeBlock.of("new $T($L, $S, $L)",
+            this.dataType,
+            enchant.id(),
+            enchant.name(),
+            enchant.maxLevel()
+        );
     }
 }
