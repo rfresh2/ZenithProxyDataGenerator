@@ -7,6 +7,7 @@ import com.zenith.mc.item.ToolTag;
 import com.zenith.mc.item.ToolTier;
 import com.zenith.mc.item.ToolType;
 import net.minecraft.core.DefaultedRegistry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ToolMaterial;
@@ -43,6 +44,7 @@ public class ItemRegistryGenerator extends RegistryGenerator<ItemData> {
             if (toolType != null && toolTier != null) {
                 toolTag = new ToolTag(toolTier, toolType);
             }
+            var maxDamageComponent = item.components().get(DataComponents.MAX_DAMAGE);
             items.add(new ItemData(
                 registry.getId(item),
                 registry.getKey(item).getPath(),
