@@ -35,7 +35,7 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:0.16.14")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.110.5+1.21.4")
     implementation("com.palantir.javapoet:javapoet:0.7.0")
-    implementation("com.github.rfresh2:MCProtocolLib:1.21.4.26") {
+    implementation("com.github.rfresh2:MCProtocolLib:1.21.4.28") {
         isTransitive = false
     }
     implementation("org.cloudburstmc.math:immutable:2.0")

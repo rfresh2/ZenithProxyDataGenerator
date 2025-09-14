@@ -24,6 +24,7 @@ public class DataGenerator implements DedicatedServerModInitializer {
         .disableHtmlEscaping()
         .create();
     public static List<Generator> generators = asList(
+        new BiomeRegistryGenerator(),
         new BlockCollisionShapes(),
         new DimensionTypesRegistryGenerator(),
         new EnchantmentRegistryGenerator(),
