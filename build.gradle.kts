@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom") version "1.10-SNAPSHOT"
+    id("fabric-loom") version "1.11-SNAPSHOT"
 }
 
 group = "com.zenith"
@@ -24,7 +24,7 @@ loom {
         }
     }
 }
-val lombokVersion = "1.18.38"
+val lombokVersion = "1.18.42"
 
 dependencies {
     minecraft("com.mojang:minecraft:1.21.8")
@@ -33,7 +33,7 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-1.21.8:2025.07.18@zip")
     })
     modImplementation("net.fabricmc:fabric-loader:0.16.14")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.129.0+1.21.8")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.133.4+1.21.8")
     implementation("com.palantir.javapoet:javapoet:0.7.0")
     implementation("com.github.rfresh2:MCProtocolLib:1.21.8.3") {
         isTransitive = false
