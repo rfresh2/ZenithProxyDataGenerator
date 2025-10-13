@@ -24,13 +24,13 @@ loom {
         }
     }
 }
-val lombokVersion = "1.18.38"
+val lombokVersion = "1.18.42"
 
 dependencies {
     minecraft("com.mojang:minecraft:1.21.4")
     mappings(loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21.4:2025.03.16@zip")
+        parchment("org.parchmentmc.data:parchment-1.21.4:2025.03.23@zip")
     })
     modImplementation("net.fabricmc:fabric-loader:0.16.14")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.110.5+1.21.4")
