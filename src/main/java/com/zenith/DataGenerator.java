@@ -37,7 +37,8 @@ public class DataGenerator implements DedicatedServerModInitializer {
         new ItemRegistryGenerator(),
         new FluidGenerator(),
         new PathfindableGenerator(),
-        new ReplaceableBlocksGenerator()
+        new ReplaceableBlocksGenerator(),
+        new EntityAttachmentsGenerator()
     );
     public static MinecraftServer SERVER_INSTANCE;
 

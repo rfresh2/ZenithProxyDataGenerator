@@ -1,12 +1,11 @@
 plugins {
-    id("fabric-loom") version "1.11-SNAPSHOT"
+    id("fabric-loom") version "1.13-SNAPSHOT"
 }
 
 group = "com.zenith"
 version = "1.0.0"
 
 repositories {
-    mavenLocal()
     maven("https://maven.parchmentmc.org")
     maven("https://maven.2b2t.vc/releases")
     maven("https://maven.2b2t.vc/remote")
@@ -32,9 +31,9 @@ dependencies {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-1.21.4:2025.03.23@zip")
     })
-    modImplementation("net.fabricmc:fabric-loader:0.17.2")
+    modImplementation("net.fabricmc:fabric-loader:0.17.3")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.119.4+1.21.4")
-    implementation("com.palantir.javapoet:javapoet:0.7.0")
+    implementation("com.palantir.javapoet:javapoet:0.8.0")
     implementation("com.github.rfresh2:MCProtocolLib:1.21.4.28") {
         isTransitive = false
     }
