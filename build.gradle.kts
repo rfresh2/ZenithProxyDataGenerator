@@ -1,12 +1,11 @@
 plugins {
-    id("fabric-loom") version "1.11-SNAPSHOT"
+    id("fabric-loom") version "1.13-SNAPSHOT"
 }
 
 group = "com.zenith"
 version = "1.0.0"
 
 repositories {
-    mavenLocal()
     maven("https://maven.parchmentmc.org")
     maven("https://maven.2b2t.vc/releases")
     maven("https://maven.2b2t.vc/remote")
@@ -27,19 +26,19 @@ loom {
 val lombokVersion = "1.18.42"
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.21.9")
+    minecraft("com.mojang:minecraft:1.21.10")
     mappings(loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21.8:2025.07.18@zip")
+        parchment("org.parchmentmc.data:parchment-1.21.10:2025.10.12@zip")
     })
-    modImplementation("net.fabricmc:fabric-loader:0.17.2")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.133.14+1.21.9")
-    implementation("com.palantir.javapoet:javapoet:0.7.0")
-    implementation("com.github.rfresh2:MCProtocolLib:1.21.9.1") {
+    modImplementation("net.fabricmc:fabric-loader:0.17.3")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.138.3+1.21.10")
+    implementation("com.palantir.javapoet:javapoet:0.8.0")
+    implementation("com.github.rfresh2:MCProtocolLib:1.21.10.8") {
         isTransitive = false
     }
     implementation("org.cloudburstmc.math:immutable:2.0")
-    implementation("com.zenith:ZenithProxy:1.21.9-SNAPSHOT") {
+    implementation("com.zenith:ZenithProxy:1.21.10-SNAPSHOT") {
         isTransitive = false
     }
     compileOnly("org.projectlombok:lombok:$lombokVersion")
