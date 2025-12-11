@@ -1,7 +1,8 @@
-package com.zenith.generator;
+package com.zenith.generator.impl;
 
 import com.palantir.javapoet.CodeBlock;
 import com.zenith.DataGenerator;
+import com.zenith.generator.DynamicRegistryGenerator;
 import com.zenith.mc.biome.Biome;
 import net.minecraft.core.registries.Registries;
 

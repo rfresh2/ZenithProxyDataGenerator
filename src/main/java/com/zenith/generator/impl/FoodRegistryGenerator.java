@@ -1,6 +1,7 @@
-package com.zenith.generator;
+package com.zenith.generator.impl;
 
 import com.palantir.javapoet.CodeBlock;
+import com.zenith.generator.RegistryGenerator;
 import com.zenith.mc.food.FoodData;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.component.DataComponents;

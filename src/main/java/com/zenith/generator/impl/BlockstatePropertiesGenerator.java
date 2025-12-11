@@ -1,7 +1,8 @@
-package com.zenith.generator;
+package com.zenith.generator.impl;
 
 import com.palantir.javapoet.*;
 import com.zenith.DataGenerator;
+import com.zenith.generator.Generator;
 import com.zenith.mc.block.BlockStatePropertyDefinition;
 import com.zenith.mc.block.properties.api.BlockStateProperties;
 import com.zenith.mc.block.properties.api.Property;
