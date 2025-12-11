@@ -25,7 +25,7 @@ public class BiomeRegistryGenerator extends DynamicRegistryGenerator<Biome> {
             var biome = holder.value();
             result.add(new Biome(
                 id,
-                holder.unwrapKey().get().location().getPath()
+                holder.unwrapKey().get().identifier().getPath()
             ));
         }
         return result;

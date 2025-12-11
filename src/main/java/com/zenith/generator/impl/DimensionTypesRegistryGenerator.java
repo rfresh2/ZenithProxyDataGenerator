@@ -29,7 +29,7 @@ public class DimensionTypesRegistryGenerator extends DynamicRegistryGenerator<Di
             var dimension = holder.value();
             result.add(new DimensionData(
                 id,
-                holder.unwrapKey().get().location().getPath(),
+                holder.unwrapKey().get().identifier().getPath(),
                 dimension.minY(),
                 dimension.minY() + dimension.height(),
                 dimension.height()

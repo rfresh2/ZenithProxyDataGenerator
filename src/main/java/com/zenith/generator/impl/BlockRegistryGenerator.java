@@ -31,7 +31,7 @@ public class BlockRegistryGenerator extends JsonRegistryGenerator<Block> {
             var blockEntityTypeStr = BuiltInRegistries.BLOCK_ENTITY_TYPE.stream()
                 .filter(type -> type.isValid(block.defaultBlockState()))
                 .findFirst()
-                .map(type -> type.builtInRegistryHolder().key().location().getPath())
+                .map(type -> type.builtInRegistryHolder().key().identifier().getPath())
                 .orElse("")
                 .toUpperCase(Locale.ENGLISH);
             var mcplBlockEntityType = blockEntityTypeStr.isEmpty() ? null : BlockEntityType.valueOf(blockEntityTypeStr);
