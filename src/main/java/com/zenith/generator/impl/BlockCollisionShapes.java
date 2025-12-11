@@ -1,4 +1,4 @@
-package com.zenith.generator;
+package com.zenith.generator.impl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.zenith.DataGenerator;
 import com.zenith.extension.IBlockProperties;
+import com.zenith.generator.Generator;
 import com.zenith.mc.block.BlockOffsetType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.DefaultedRegistry;

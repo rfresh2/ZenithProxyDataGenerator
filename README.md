@@ -21,23 +21,19 @@ versus
 
 ## Usage
 
-The main ZenithProxy project must first be published to your local maven repo:
-
-1. Enable the `jar` task (temporarily)
-    ```kotlin
-    tasks {
-        // ...
-        jar { enabled = true }
-        // ...
-    }
-    ```
-2. Execute the `publishToMavenLocal` task
-
-Then in this `dataGenerator` gradle project:
-
 1. Execute the `runServer` task
 2. Manually copy files from `build/data` into the main ZenithProxy project.
 
-JSON data files should be copied to `src/main/resources/mcdata`. 
+JSON data files should be copied to `src/main/resources/mcdata`.
 
 Java class files should be copied to their corresponding packages in `src/main/java/com/zenith/mc`.
+
+### Development
+
+There is some awkwardness due to the indirect circular dependency between ZenithProxy and this project.
+
+If you are making changes to data classes in the main ZenithProxy repo:
+
+Publish a ZenithProxy snapshot to your local maven repo with the `publishSnapshotPublicationToMavenLocal` task
+
+Then in this `dataGenerator` gradle project, add `mavenLocal()` to the top of the `repositories` block in `build.gradle.kts`

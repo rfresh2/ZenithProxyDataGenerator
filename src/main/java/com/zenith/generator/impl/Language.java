@@ -1,7 +1,8 @@
-package com.zenith.generator;
+package com.zenith.generator.impl;
 
 import com.google.gson.reflect.TypeToken;
 import com.zenith.DataGenerator;
+import com.zenith.generator.Generator;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 import java.io.IOException;

@@ -1,6 +1,7 @@
-package com.zenith.generator;
+package com.zenith.generator.impl;
 
 import com.zenith.DataGenerator;
+import com.zenith.generator.Generator;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
