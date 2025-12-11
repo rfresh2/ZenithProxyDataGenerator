@@ -1,56 +1,65 @@
-package com.zenith.generator;
+package com.zenith.generator.impl;
 
 import com.mojang.authlib.GameProfile;
 import com.zenith.DataGenerator;
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import it.unimi.dsi.fastutil.doubles.DoubleList;
-import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
+import com.zenith.generator.JsonRegistryGenerator;
+import com.zenith.mc.entity.EntityAttachment;
+import com.zenith.mc.entity.EntityData;
+import com.zenith.mc.entity.EntityRegistrySpec;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityAttachment;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.VehicleEntity;
 
-import java.io.FileWriter;
-import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-public class EntityAttachmentsGenerator implements Generator {
+public class EntityRegistryGenerator extends JsonRegistryGenerator<EntityData> {
+    public EntityRegistryGenerator() {
+        super(EntityData.class, "EntityRegistry", EntityRegistrySpec.class, "entities.json");
+    }
+
     @Override
-    public void generate() {
-        final Int2ObjectLinkedOpenHashMap<DoubleList> attachmentData = new Int2ObjectLinkedOpenHashMap<>();
+    public List<EntityData> buildDataList() {
+        List<EntityData> entities = new ArrayList<>();
         Registry<EntityType<?>> entityTypeRegistry = BuiltInRegistries.ENTITY_TYPE;
         entityTypeRegistry.forEach(entity -> {
             var registryKey = entityTypeRegistry.getKey(entity);
             Entity instance = createEntity(entity);
-            if (instance == null && entity != EntityType.PLAYER) { // expected for player type
+            if (instance == null) {
                 throw new RuntimeException("Failed to create entity instance: " + entity);
             }
+            EntityAttachment attachment = null;
             if (instance instanceof VehicleEntity || instance instanceof Player) {
-                var data = new DoubleArrayList();
                 var attachments = instance.getAttachments();
-                var passengerAttachment = attachments.attachments.get(EntityAttachment.PASSENGER);
+                var passengerAttachment = attachments.attachments.get(net.minecraft.world.entity.EntityAttachment.PASSENGER);
                 if (passengerAttachment.size() != 1) throw new RuntimeException("Passenger attachment too many positions");
                 if (passengerAttachment.getFirst().x() != 0 || passengerAttachment.getFirst().z() != 0) throw new RuntimeException("non-zero xz passenger attachment");
-                data.add(passengerAttachment.getFirst().y());
-                var vehicleAttachment = attachments.attachments.get(EntityAttachment.VEHICLE);
+                var vehicleAttachment = attachments.attachments.get(net.minecraft.world.entity.EntityAttachment.VEHICLE);
                 if (vehicleAttachment.size() != 1) throw new RuntimeException("Vehicle attachment too many positions");
                 if (vehicleAttachment.getFirst().x() != 0 || vehicleAttachment.getFirst().z() != 0) throw new RuntimeException("non-zero xz vehicle attachment");
-                data.add(vehicleAttachment.getFirst().y());
-                attachmentData.put(entityTypeRegistry.getId(entity), data);
+                attachment = new EntityAttachment(passengerAttachment.getFirst().y(), vehicleAttachment.getFirst().y());
             }
+            entities.add(new EntityData(
+                entityTypeRegistry.getId(entity),
+                registryKey.getPath(),
+                entity.getDimensions().width(),
+                entity.getDimensions().height(),
+                instance.isAttackable(),
+                instance.isPickable(), // TODO: there is much more logic in the entity class hierarchy about when this is true
+                instance instanceof LivingEntity,
+                instance instanceof AgeableMob,
+                instance.blocksBuilding,
+                org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType.valueOf(registryKey.getPath().toUpperCase()),
+                attachment
+            ));
         });
-        try (Writer out = new FileWriter(DataGenerator.outputFile("entityAttachments.json"))) {
-            DataGenerator.gson.toJson(attachmentData, out);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        DataGenerator.LOG.info("Dumped entityAttachments.json");
+
+        return entities;
     }
 
     private Entity createEntity(EntityType<?> type) {

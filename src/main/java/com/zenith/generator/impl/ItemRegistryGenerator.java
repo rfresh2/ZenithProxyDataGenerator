@@ -1,7 +1,8 @@
-package com.zenith.generator;
+package com.zenith.generator.impl;
 
 import com.palantir.javapoet.CodeBlock;
 import com.zenith.extension.IItemProperties;
+import com.zenith.generator.RegistryGenerator;
 import com.zenith.mc.item.ItemData;
 import com.zenith.mc.item.ToolTag;
 import com.zenith.mc.item.ToolTier;

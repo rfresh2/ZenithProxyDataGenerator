@@ -2,7 +2,8 @@ package com.zenith;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.zenith.generator.*;
+import com.zenith.generator.Generator;
+import com.zenith.generator.impl.*;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
@@ -17,13 +18,13 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 public class DataGenerator implements DedicatedServerModInitializer {
-    public static Logger LOG = LoggerFactory.getLogger("ZenithProxy");
-    public static Path dataDir = resolveDataDir();
-    public static Gson gson = new GsonBuilder()
+    public static final Logger LOG = LoggerFactory.getLogger("ZenithProxy");
+    public static final Path dataDir = resolveDataDir();
+    public static final Gson gson = new GsonBuilder()
         .setLenient()
         .disableHtmlEscaping()
         .create();
-    public static List<Generator> generators = asList(
+    public static final List<Generator> generators = asList(
         new BiomeRegistryGenerator(),
         new BlockCollisionShapes(),
         new DimensionTypesRegistryGenerator(),
@@ -36,9 +37,7 @@ public class DataGenerator implements DedicatedServerModInitializer {
         new BlockstatePropertiesGenerator(),
         new ItemRegistryGenerator(),
         new FluidGenerator(),
-        new PathfindableGenerator(),
-        new ReplaceableBlocksGenerator(),
-        new EntityAttachmentsGenerator()
+        new PathfindableGenerator()
     );
     public static MinecraftServer SERVER_INSTANCE;
 

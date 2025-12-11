@@ -14,6 +14,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinBlockProperties implements IBlockProperties {
     @Shadow float destroyTime;
     @Shadow boolean requiresCorrectToolForDrops;
+    @Shadow boolean replaceable;
+    @Shadow float friction;
+    @Shadow float speedFactor;
+    @Shadow float jumpFactor;
+    @Shadow boolean isAir;
     @Unique private BlockOffsetType offsetType = BlockOffsetType.NONE;
     @Override
     public BlockOffsetType dg$getOffsetType() {
@@ -37,5 +42,30 @@ public class MixinBlockProperties implements IBlockProperties {
     @Override
     public boolean dg$requiresCorrectToolForDrops() {
         return this.requiresCorrectToolForDrops;
+    }
+
+    @Override
+    public boolean dg$isReplaceable() {
+        return this.replaceable;
+    }
+
+    @Override
+    public float dg$getFriction() {
+        return this.friction;
+    }
+
+    @Override
+    public float dg$getSpeedFactor() {
+        return this.speedFactor;
+    }
+
+    @Override
+    public float dg$getJumpFactor() {
+        return this.jumpFactor;
+    }
+
+    @Override
+    public boolean dg$isAir() {
+        return this.isAir;
     }
 }
