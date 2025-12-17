@@ -31,10 +31,10 @@ dependencies {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-1.21.4:2025.03.23@zip")
     })
-    modImplementation("net.fabricmc:fabric-loader:0.18.1")
+    modImplementation("net.fabricmc:fabric-loader:0.18.3")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.119.4+1.21.4")
     implementation("com.palantir.javapoet:javapoet:0.9.0")
-    implementation("com.github.rfresh2:MCProtocolLib:1.21.4.35") {
+    implementation("com.github.rfresh2:MCProtocolLib:1.21.4.36") {
         isTransitive = false
     }
     implementation("org.cloudburstmc.math:immutable:2.0")
