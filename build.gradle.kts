@@ -13,6 +13,12 @@ repositories {
     mavenCentral()
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
+}
+
 loom {
     accessWidenerPath = file("src/main/resources/zenithproxy.accesswidener")
     runs {
@@ -29,12 +35,12 @@ dependencies {
     minecraft("com.mojang:minecraft:1.21.11")
     mappings(loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21.10:2025.10.12@zip")
+        parchment("org.parchmentmc.data:parchment-1.21.11:2025.12.20@zip")
     })
-    modImplementation("net.fabricmc:fabric-loader:0.18.3")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.139.4+1.21.11")
+    modImplementation("net.fabricmc:fabric-loader:0.18.4")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.141.1+1.21.11")
     implementation("com.palantir.javapoet:javapoet:0.10.0")
-    implementation("com.github.rfresh2:MCProtocolLib:1.21.11.3") {
+    implementation("com.github.rfresh2:MCProtocolLib:1.21.11.4") {
         isTransitive = false
     }
     implementation("org.cloudburstmc.math:immutable:2.0")
