@@ -9,6 +9,7 @@ import com.zenith.mc.block.BlockTags;
 import com.zenith.mixin.AccessorBlockBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.geysermc.mcprotocollib.protocol.data.game.level.block.BlockEntityType;
 
@@ -24,7 +25,6 @@ public class BlockRegistryGenerator extends JsonRegistryGenerator<Block> {
     public List<Block> buildDataList() {
         List<Block> blockList = new ArrayList<>();
         var blockRegistry = BuiltInRegistries.BLOCK;
-
         blockRegistry.forEach(block -> {
             List<BlockState> blockStates = block.getStateDefinition().getPossibleStates();
             var registryKey = blockRegistry.getKey(block);
@@ -53,6 +53,7 @@ public class BlockRegistryGenerator extends JsonRegistryGenerator<Block> {
                 ((IBlockProperties) block.properties()).dg$getSpeedFactor(),
                 ((IBlockProperties) block.properties()).dg$getJumpFactor(),
                 ((IBlockProperties) block.properties()).dg$isAir(),
+                block instanceof FallingBlock,
                 mcplBlockEntityType);
             blockList.add(data);
         });
