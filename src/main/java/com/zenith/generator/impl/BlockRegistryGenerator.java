@@ -1,12 +1,12 @@
 package com.zenith.generator.impl;
 
-import com.google.common.base.Suppliers;
 import com.zenith.extension.IBlockProperties;
 import com.zenith.generator.JsonRegistryGenerator;
 import com.zenith.mc.block.Block;
 import com.zenith.mc.block.BlockRegistrySpec;
 import com.zenith.mc.block.BlockTags;
 import com.zenith.mixin.AccessorBlockBehavior;
+import lombok.SneakyThrows;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.FallingBlock;
@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.geysermc.mcprotocollib.protocol.data.game.level.block.BlockEntityType;
 
 import java.util.*;
-import java.util.function.Supplier;
 
 public class BlockRegistryGenerator extends JsonRegistryGenerator<Block> {
     public BlockRegistryGenerator() {
@@ -47,12 +46,10 @@ public class BlockRegistryGenerator extends JsonRegistryGenerator<Block> {
                 block.defaultBlockState().isSolid(),
                 ((IBlockProperties) block.properties()).dg$getDestroySpeed(),
                 ((IBlockProperties) block.properties()).dg$requiresCorrectToolForDrops(),
-                getZenithBlockTags(block),
-                ((IBlockProperties) block.properties()).dg$isReplaceable(),
+                getZenithBlockTagsV2(block),
                 ((IBlockProperties) block.properties()).dg$getFriction(),
                 ((IBlockProperties) block.properties()).dg$getSpeedFactor(),
                 ((IBlockProperties) block.properties()).dg$getJumpFactor(),
-                ((IBlockProperties) block.properties()).dg$isAir(),
                 block instanceof FallingBlock,
                 mcplBlockEntityType);
             blockList.add(data);
@@ -60,34 +57,30 @@ public class BlockRegistryGenerator extends JsonRegistryGenerator<Block> {
         return blockList;
     }
 
-    private Set<net.minecraft.world.level.block.Block> getTaggedBlocks(TagKey<net.minecraft.world.level.block.Block> tag) {
-        Set<net.minecraft.world.level.block.Block> blocks = new HashSet<>();
-        BuiltInRegistries.BLOCK.getOrThrow(tag).stream()
-            .forEach(t -> blocks.add(t.value()));
-        return blocks;
-    }
-
-    final Supplier<Set<net.minecraft.world.level.block.Block>> AXE_MINEABLE_BLOCKS = Suppliers.memoize(() -> getTaggedBlocks(net.minecraft.tags.BlockTags.MINEABLE_WITH_AXE));
-    final Supplier<Set<net.minecraft.world.level.block.Block>> HOE_MINEABLE_BLOCKS = Suppliers.memoize(() -> getTaggedBlocks(net.minecraft.tags.BlockTags.MINEABLE_WITH_HOE));
-    final Supplier<Set<net.minecraft.world.level.block.Block>> PICKAXE_MINEABLE_BLOCKS = Suppliers.memoize(() -> getTaggedBlocks(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE));
-    final Supplier<Set<net.minecraft.world.level.block.Block>> SHOVEL_MINEABLE_BLOCKS = Suppliers.memoize(() -> getTaggedBlocks(net.minecraft.tags.BlockTags.MINEABLE_WITH_SHOVEL));
-    final Supplier<Set<net.minecraft.world.level.block.Block>> SWORD_MINEABLE_BLOCKS = Suppliers.memoize(() -> getTaggedBlocks(net.minecraft.tags.BlockTags.SWORD_EFFICIENT));
-    final Supplier<Set<net.minecraft.world.level.block.Block>> NEEDS_DIAMOND_TOOL_BLOCKS = Suppliers.memoize(() -> getTaggedBlocks(net.minecraft.tags.BlockTags.NEEDS_DIAMOND_TOOL));
-    final Supplier<Set<net.minecraft.world.level.block.Block>> NEEDS_IRON_TOOL_BLOCKS = Suppliers.memoize(() -> getTaggedBlocks(net.minecraft.tags.BlockTags.NEEDS_IRON_TOOL));
-    final Supplier<Set<net.minecraft.world.level.block.Block>> NEEDS_STONE_TOOL_BLOCKS = Suppliers.memoize(() -> getTaggedBlocks(net.minecraft.tags.BlockTags.NEEDS_STONE_TOOL));
-    final Supplier<Set<net.minecraft.world.level.block.Block>> CLIMBABLE_BLOCKS = Suppliers.memoize(() -> getTaggedBlocks(net.minecraft.tags.BlockTags.CLIMBABLE));
-
-    private EnumSet<BlockTags> getZenithBlockTags(final net.minecraft.world.level.block.Block block) {
+    @SneakyThrows
+    private EnumSet<BlockTags> getZenithBlockTagsV2(final net.minecraft.world.level.block.Block block) {
         var set = EnumSet.noneOf(BlockTags.class);
-        if (AXE_MINEABLE_BLOCKS.get().contains(block)) set.add(BlockTags.MINEABLE_WITH_AXE);
-        if (HOE_MINEABLE_BLOCKS.get().contains(block)) set.add(BlockTags.MINEABLE_WITH_HOE);
-        if (PICKAXE_MINEABLE_BLOCKS.get().contains(block)) set.add(BlockTags.MINEABLE_WITH_PICKAXE);
-        if (SHOVEL_MINEABLE_BLOCKS.get().contains(block)) set.add(BlockTags.MINEABLE_WITH_SHOVEL);
-        if (SWORD_MINEABLE_BLOCKS.get().contains(block)) set.add(BlockTags.SWORD_EFFICIENT);
-        if (NEEDS_DIAMOND_TOOL_BLOCKS.get().contains(block)) set.add(BlockTags.NEEDS_DIAMOND_TOOL);
-        if (NEEDS_IRON_TOOL_BLOCKS.get().contains(block)) set.add(BlockTags.NEEDS_IRON_TOOL);
-        if (NEEDS_STONE_TOOL_BLOCKS.get().contains(block)) set.add(BlockTags.NEEDS_STONE_TOOL);
-        if (CLIMBABLE_BLOCKS.get().contains(block)) set.add(BlockTags.CLIMBABLE);
+
+        var blockRegRef = BuiltInRegistries.BLOCK.getOrThrow(block.builtInRegistryHolder().key());
+        var tagsOnBlock = blockRegRef.tags()
+            .filter(tag -> tag.location().getNamespace().equals("minecraft"))
+            .toList();
+        var tagFields = Arrays.stream(net.minecraft.tags.BlockTags.class.getDeclaredFields())
+            .filter(field -> field.getType().equals(TagKey.class))
+            .toList();
+        for (var tag : tagsOnBlock) {
+            for (var field : tagFields) {
+                var fieldValue = (TagKey<Block>) field.get(null);
+                if (fieldValue.location().equals(tag.location())) {
+                    set.add(BlockTags.valueOf(field.getName()));
+                    break;
+                }
+            }
+        }
+        if (set.size() != tagsOnBlock.size()) {
+            throw new RuntimeException("Failed to find all tags for block " + block.builtInRegistryHolder().key().location());
+        }
+
         if (set.isEmpty()) return EnumSet.noneOf(BlockTags.class);
         return set;
     }
