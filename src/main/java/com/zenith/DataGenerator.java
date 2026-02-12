@@ -27,6 +27,7 @@ public class DataGenerator implements DedicatedServerModInitializer {
     public static final List<Generator> generators = asList(
         new BiomeRegistryGenerator(),
         new BlockCollisionShapes(),
+        new BlockTagsGenerator(),
         new DimensionTypesRegistryGenerator(),
         new EnchantmentRegistryGenerator(),
         new EntityRegistryGenerator(),
@@ -35,6 +36,7 @@ public class DataGenerator implements DedicatedServerModInitializer {
         new MapColorIdToColor(),
         new BlockRegistryGenerator(),
         new BlockstatePropertiesGenerator(),
+        new ItemTagsGenerator(),
         new ItemRegistryGenerator(),
         new FluidGenerator(),
         new PathfindableGenerator()

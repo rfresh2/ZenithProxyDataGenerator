@@ -1,5 +1,5 @@
 plugins {
-    id("net.fabricmc.fabric-loom-remap") version "1.14-SNAPSHOT"
+    id("net.fabricmc.fabric-loom-remap") version "1.15-SNAPSHOT"
 }
 
 group = "com.zenith"
@@ -40,13 +40,15 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:0.18.4")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.141.1+1.21.11")
     implementation("com.palantir.javapoet:javapoet:0.10.0")
-    implementation("com.github.rfresh2:MCProtocolLib:1.21.11.4") {
-        isTransitive = false
+    implementation("com.github.rfresh2:MCProtocolLib:1.21.11.8") {
+
     }
     implementation("org.cloudburstmc.math:immutable:2.0")
     implementation("com.zenith:ZenithProxy:1.21.11-SNAPSHOT") {
         isTransitive = false
     }
+    api(platform("tools.jackson:jackson-bom:3.0.4"))
+    api("tools.jackson.core:jackson-databind")
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
