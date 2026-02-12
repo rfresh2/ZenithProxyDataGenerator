@@ -1,5 +1,10 @@
 package com.zenith.generator.impl;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.zenith.DataGenerator;
 import com.zenith.extension.IItemProperties;
 import com.zenith.generator.JsonRegistryGenerator;
@@ -7,18 +12,20 @@ import com.zenith.mc.item.*;
 import io.netty.buffer.ByteBufAllocator;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.core.DefaultedRegistry;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.*;
+import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponent;
+import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponentType;
+import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponentTypes;
+import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponents;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.zenith.DataGenerator.LOG;
 
@@ -36,26 +43,9 @@ public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
         ToolMaterial.NETHERITE, ToolTier.NETHERITE
     );
 
-    // build dummy list
     @Override
     public List<ItemData> buildDataList() {
         final List<ItemData> items = new ArrayList<>();
-        DefaultedRegistry<Item> registry = BuiltInRegistries.ITEM;
-        registry.stream().forEach(item -> {
-            items.add(new ItemData(
-                registry.getId(item),
-                registry.getKey(item).getPath(),
-                0,
-                null,
-                null
-            ));
-        });
-        return items;
-    }
-
-    // real list
-    public List<SerializedItemData> buildSerializableDataList() {
-        final List<SerializedItemData> items = new ArrayList<>();
         DefaultedRegistry<Item> registry = BuiltInRegistries.ITEM;
 
         registry.stream().forEach(item -> {
@@ -81,14 +71,63 @@ public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
             if (toolType != null && toolTier != null) {
                 toolTag = new ToolTag(toolTier, toolType);
             }
+            items.add(new ItemData(
+                registry.getId(item),
+                registry.getKey(item).getPath(),
+                extractMcplComponents(item.getDefaultInstance().getComponents()),
+                toolTag)
+            );
+        });
+        return items;
+    }
+
+    @Override
+    public void dumpJson(List<ItemData> dataList) {
+        var jacksonModule = new SimpleModule();
+        jacksonModule.addSerializer(DataComponents.class, new DataComponentsSerializer());
+        var mapper = JsonMapper.builder()
+            .addModule(jacksonModule)
+            .build();
+        try (Writer out = new FileWriter(DataGenerator.outputFile(jsonFileName))) {
+            mapper.writer().writeValue(out, dataList);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        LOG.info("Dumped {}", jsonFileName);
+    }
+
+    DataComponents extractMcplComponents(DataComponentMap components) {
+        var mcplComponents = new DataComponents(new HashMap<>());
+        for (TypedDataComponent component : components) {
+            var type = component.type();
+            var componentId = BuiltInRegistries.DATA_COMPONENT_TYPE.getId(type);
+            var buf = ByteBufAllocator.DEFAULT.buffer();
+            var rbuf = new RegistryFriendlyByteBuf(buf, DataGenerator.SERVER_INSTANCE.registryAccess());
+            component.type().streamCodec().encode(rbuf, component.value());
+            DataComponentType mcplType = DataComponentTypes.from(componentId);
+            DataComponent mcplComponent = mcplType.readDataComponent(buf);
+
+            mcplComponents.getDataComponents().put(mcplType, mcplComponent);
+            buf.release();
+        }
+        return mcplComponents;
+    }
+
+    static class DataComponentsSerializer extends StdSerializer<DataComponents> {
+
+        protected DataComponentsSerializer() {
+            super(DataComponents.class);
+        }
+
+        @Override
+        public void serialize(final DataComponents components, final JsonGenerator jsonGenerator, final SerializerProvider serializerProvider) throws IOException {
             Int2ObjectArrayMap<String> serializedComponents = new Int2ObjectArrayMap<>();
-            var components = item.getDefaultInstance().getComponents();
-            for (TypedDataComponent component : components) {
-                var type = component.type();
-                var componentId = BuiltInRegistries.DATA_COMPONENT_TYPE.getId(type);
+            for (var entry : components.getDataComponents().entrySet()) {
+                DataComponentType type = entry.getKey();
+                var componentId = type.getId();
                 var buf = ByteBufAllocator.DEFAULT.buffer();
-                var rbuf = new RegistryFriendlyByteBuf(buf, DataGenerator.SERVER_INSTANCE.registryAccess());
-                component.type().streamCodec().encode(rbuf, component.value());
+                type.writeDataComponent(buf, entry.getValue().getValue());
+
                 var bytes = new byte[buf.readableBytes()];
                 buf.markReaderIndex();
                 buf.readBytes(bytes);
@@ -97,25 +136,7 @@ public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
                 serializedComponents.put(componentId,  base64String);
                 buf.release();
             }
-            items.add(new SerializedItemData(
-                registry.getId(item),
-                registry.getKey(item).getPath(),
-                item.getDefaultMaxStackSize(),
-                serializedComponents,
-                toolTag)
-            );
-        });
-        return items;
-    }
-
-    @Override
-    public void dumpJson(List<ItemData> unused) {
-        List<SerializedItemData> dataList = buildSerializableDataList();
-        try (Writer out = new FileWriter(DataGenerator.outputFile(jsonFileName))) {
-            DataGenerator.gson.toJson(dataList, out);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            jsonGenerator.writeObject(serializedComponents);
         }
-        LOG.info("Dumped {}", jsonFileName);
     }
 }

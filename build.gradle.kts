@@ -35,7 +35,6 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.119.4+1.21.4")
     implementation("com.palantir.javapoet:javapoet:0.10.0")
     implementation("com.github.rfresh2:MCProtocolLib:1.21.4.42") {
-        isTransitive = false
     }
     implementation("org.cloudburstmc.math:immutable:2.0")
     implementation("com.zenith:ZenithProxy:1.21.4-SNAPSHOT") {
