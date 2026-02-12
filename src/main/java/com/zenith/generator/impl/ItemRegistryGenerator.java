@@ -1,10 +1,5 @@
 package com.zenith.generator.impl;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.zenith.DataGenerator;
 import com.zenith.extension.IItemProperties;
 import com.zenith.generator.JsonRegistryGenerator;
@@ -23,6 +18,12 @@ import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponen
 import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponentType;
 import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponentTypes;
 import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponents;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.ser.std.StdSerializer;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -151,7 +152,7 @@ public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
         }
 
         @Override
-        public void serialize(final DataComponents components, final JsonGenerator jsonGenerator, final SerializerProvider serializerProvider) throws IOException {
+        public void serialize(final DataComponents components, final JsonGenerator jsonGenerator, final SerializationContext provider) throws JacksonException {
             Int2ObjectArrayMap<String> serializedComponents = new Int2ObjectArrayMap<>();
             for (var entry : components.getDataComponents().entrySet()) {
                 DataComponentType type = entry.getKey();
@@ -167,7 +168,7 @@ public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
                 serializedComponents.put(componentId,  base64String);
                 buf.release();
             }
-            jsonGenerator.writeObject(serializedComponents);
+            jsonGenerator.writePOJO(serializedComponents);
         }
     }
 }

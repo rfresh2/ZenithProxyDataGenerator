@@ -13,6 +13,12 @@ repositories {
     mavenCentral()
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 loom {
     accessWidenerPath = file("src/main/resources/zenithproxy.accesswidener")
     runs {
@@ -40,6 +46,8 @@ dependencies {
     implementation("com.zenith:ZenithProxy:1.21.4-SNAPSHOT") {
         isTransitive = false
     }
+    api(platform("tools.jackson:jackson-bom:3.0.4"))
+    api("tools.jackson.core:jackson-databind")
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
