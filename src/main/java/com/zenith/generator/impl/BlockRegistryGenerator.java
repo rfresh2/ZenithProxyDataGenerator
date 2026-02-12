@@ -46,7 +46,7 @@ public class BlockRegistryGenerator extends JsonRegistryGenerator<Block> {
                 block.defaultBlockState().isSolid(),
                 ((IBlockProperties) block.properties()).dg$getDestroySpeed(),
                 ((IBlockProperties) block.properties()).dg$requiresCorrectToolForDrops(),
-                getZenithBlockTagsV2(block),
+                getZenithBlockTags(block),
                 ((IBlockProperties) block.properties()).dg$getFriction(),
                 ((IBlockProperties) block.properties()).dg$getSpeedFactor(),
                 ((IBlockProperties) block.properties()).dg$getJumpFactor(),
@@ -58,7 +58,7 @@ public class BlockRegistryGenerator extends JsonRegistryGenerator<Block> {
     }
 
     @SneakyThrows
-    private EnumSet<BlockTags> getZenithBlockTagsV2(final net.minecraft.world.level.block.Block block) {
+    private EnumSet<BlockTags> getZenithBlockTags(final net.minecraft.world.level.block.Block block) {
         var set = EnumSet.noneOf(BlockTags.class);
 
         var blockRegRef = BuiltInRegistries.BLOCK.getOrThrow(block.builtInRegistryHolder().key());

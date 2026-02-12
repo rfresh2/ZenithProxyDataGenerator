@@ -36,6 +36,7 @@ public class DataGenerator implements DedicatedServerModInitializer {
         new MapColorIdToColor(),
         new BlockRegistryGenerator(),
         new BlockstatePropertiesGenerator(),
+        new ItemTagsGenerator(),
         new ItemRegistryGenerator(),
         new FluidGenerator(),
         new PathfindableGenerator()

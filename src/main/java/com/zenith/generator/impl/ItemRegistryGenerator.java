@@ -11,11 +11,13 @@ import com.zenith.generator.JsonRegistryGenerator;
 import com.zenith.mc.item.*;
 import io.netty.buffer.ByteBufAllocator;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import lombok.SneakyThrows;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponent;
 import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponentType;
@@ -31,7 +33,7 @@ import static com.zenith.DataGenerator.LOG;
 
 public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
     public ItemRegistryGenerator() {
-        super(ItemData.class, "ItemRegistry2", ItemRegistrySpec.class, "items.json");
+        super(ItemData.class, "ItemRegistry", ItemRegistrySpec.class, "items.json");
     }
 
     private static final Map<ToolMaterial, ToolTier> tierMap = Map.of(
@@ -75,10 +77,39 @@ public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
                 registry.getId(item),
                 registry.getKey(item).getPath(),
                 extractMcplComponents(item.getDefaultInstance().getComponents()),
+                getZenithItemTags(item),
                 toolTag)
             );
         });
         return items;
+    }
+
+    @SneakyThrows
+    private EnumSet<ItemTags> getZenithItemTags(final Item item) {
+        var set = EnumSet.noneOf(ItemTags.class);
+
+        var itemRegRef = BuiltInRegistries.ITEM.getOrThrow(item.builtInRegistryHolder().key());
+        var tagsOnItem = itemRegRef.tags()
+            .filter(tag -> tag.location().getNamespace().equals("minecraft"))
+            .toList();
+        var tagFields = Arrays.stream(net.minecraft.tags.ItemTags.class.getDeclaredFields())
+            .filter(field -> field.getType().equals(TagKey.class))
+            .toList();
+        for (var tag : tagsOnItem) {
+            for (var field : tagFields) {
+                var fieldValue = (TagKey<Item>) field.get(null);
+                if (fieldValue.location().equals(tag.location())) {
+                    set.add(ItemTags.valueOf(field.getName()));
+                    break;
+                }
+            }
+        }
+        if (set.size() != tagsOnItem.size()) {
+            throw new RuntimeException("Failed to find all tags for item " + item.builtInRegistryHolder().key().location());
+        }
+
+        if (set.isEmpty()) return EnumSet.noneOf(ItemTags.class);
+        return set;
     }
 
     @Override
