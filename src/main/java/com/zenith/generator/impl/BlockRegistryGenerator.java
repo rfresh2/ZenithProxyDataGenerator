@@ -17,7 +17,7 @@ import java.util.*;
 
 public class BlockRegistryGenerator extends JsonRegistryGenerator<Block> {
     public BlockRegistryGenerator() {
-        super(Block.class, "BlockRegistry", BlockRegistrySpec.class, "blocks.json");
+        super(Block.class, "BlockRegistry", BlockRegistrySpec.class, "blocks.smile");
     }
 
     @Override

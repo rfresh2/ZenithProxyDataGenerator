@@ -1,9 +1,5 @@
 package com.zenith.generator.impl;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.zenith.DataGenerator;
 import com.zenith.extension.IBlockProperties;
 import com.zenith.generator.Generator;
@@ -18,11 +14,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.io.FileWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BlockCollisionShapes implements Generator {
     @Override
@@ -39,17 +34,13 @@ public class BlockCollisionShapes implements Generator {
     }
 
     private void writeCache(String name, BlockShapesCache cache, DefaultedRegistry<Block> blockRegistry) {
-        JsonObject resultObject = new JsonObject();
-        resultObject.add("blocks", cache.dumpBlockShapeIndices(blockRegistry));
-        resultObject.add("shapes", cache.dumpShapesObject());
-        resultObject.add("boxes", cache.dumpBoxShapeIndices());
+        Map<String, Object> resultObject = new LinkedHashMap<>();
+        resultObject.put("blocks", cache.dumpBlockShapeIndices(blockRegistry));
+        resultObject.put("shapes", cache.dumpShapesObject());
+        resultObject.put("boxes", cache.dumpBoxShapeIndices());
 
-        try (Writer out = new FileWriter(DataGenerator.outputFile(name + ".json"))) {
-            DataGenerator.gson.toJson(resultObject, out);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        DataGenerator.LOG.info("Dumped {}.json", name);
+        DataGenerator.writeSmile(name + ".smile", resultObject);
+        DataGenerator.LOG.info("Dumped {}.smile", name);
     }
 
     @FunctionalInterface
@@ -114,61 +105,47 @@ public class BlockCollisionShapes implements Generator {
             return boxes;
         }
 
-        public JsonObject dumpBlockShapeIndices(Registry<Block> blockRegistry) {
-            JsonObject resultObject = new JsonObject();
+        public Map<String, Object> dumpBlockShapeIndices(Registry<Block> blockRegistry) {
+            Map<String, Object> resultObject = new LinkedHashMap<>();
 
             for (var entry : blockToShapes.entrySet()) {
                 List<Integer> blockCollisions = entry.getValue();
                 long distinctShapesCount = blockCollisions.stream().distinct().count();
-                JsonElement blockCollision;
+                Object blockCollision;
                 if (distinctShapesCount == 1L) {
-                    blockCollision = new JsonPrimitive(blockCollisions.get(0));
+                    blockCollision = blockCollisions.get(0);
                 } else {
-                    blockCollision = new JsonArray();
-                    for (int collisionId : blockCollisions) {
-                        ((JsonArray) blockCollision).add(collisionId);
-                    }
+                    blockCollision = blockCollisions;
                 }
 
-                resultObject.add(Integer.toString(blockRegistry.getId(entry.getKey())), blockCollision);
+                resultObject.put(Integer.toString(blockRegistry.getId(entry.getKey())), blockCollision);
             }
 
             return resultObject;
         }
 
-        public JsonObject dumpShapesObject() {
-            JsonObject shapesObject = new JsonObject();
+        public Map<String, List<Integer>> dumpShapesObject() {
+            Map<String, List<Integer>> shapesObject = new LinkedHashMap<>();
 
             for (var entry : shapeToShapeId.entrySet()) {
-                JsonArray boxesArray = new JsonArray();
                 List<Integer> shapeToBoxIds = new ArrayList<>();
                 List<Box> boxes = shapeToBoxes.get(entry.getKey());
                 for (Box box : boxes) {
                     int boxId = boxToBoxId.get(box);
                     shapeToBoxIds.add(boxId);
                 }
-                for (int boxId : shapeToBoxIds) {
-                    boxesArray.add(boxId);
-                }
-                shapesObject.add(Integer.toString(entry.getValue()), boxesArray);
+                shapesObject.put(Integer.toString(entry.getValue()), shapeToBoxIds);
             }
             return shapesObject;
         }
 
-        public JsonObject dumpBoxShapeIndices() {
-            JsonObject boxShapeIndices = new JsonObject();
+        public Map<String, List<Double>> dumpBoxShapeIndices() {
+            Map<String, List<Double>> boxShapeIndices = new LinkedHashMap<>();
 
             for (var entry : boxToBoxId.entrySet()) {
                 Box box = entry.getKey();
-                JsonArray boxArray = new JsonArray();
-                boxArray.add(box.x1());
-                boxArray.add(box.x2());
-                boxArray.add(box.y1());
-                boxArray.add(box.y2());
-                boxArray.add(box.z1());
-                boxArray.add(box.z2());
-
-                boxShapeIndices.add(Integer.toString(entry.getValue()), boxArray);
+                List<Double> boxArray = List.of(box.x1(), box.x2(), box.y1(), box.y2(), box.z1(), box.z2());
+                boxShapeIndices.put(Integer.toString(entry.getValue()), boxArray);
             }
 
             return boxShapeIndices;

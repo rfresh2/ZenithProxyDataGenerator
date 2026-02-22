@@ -7,9 +7,7 @@ import com.zenith.mc.Registry;
 import com.zenith.mc.RegistryData;
 
 import javax.lang.model.element.Modifier;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
 
 import static com.zenith.DataGenerator.LOG;
@@ -37,11 +35,7 @@ public abstract class JsonRegistryGenerator<T extends RegistryData> implements G
     public abstract List<T> buildDataList();
 
     public void dumpJson(List<T> dataList) {
-        try (Writer out = new FileWriter(DataGenerator.outputFile(jsonFileName))) {
-            DataGenerator.gson.toJson(dataList, out);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        DataGenerator.writeSmile(jsonFileName, dataList);
         LOG.info("Dumped {}", jsonFileName);
     }
 

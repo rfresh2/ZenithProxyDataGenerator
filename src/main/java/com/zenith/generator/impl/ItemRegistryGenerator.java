@@ -13,29 +13,26 @@ import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.*;
 import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponent;
 import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponentType;
-import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponentTypes;
 import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponents;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
-import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.dataformat.smile.SmileMapper;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.*;
 
 import static com.zenith.DataGenerator.LOG;
 
 public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
+    private final IdentityHashMap<DataComponents, Int2ObjectArrayMap<byte[]>> encodedComponentBytesByDataComponents = new IdentityHashMap<>();
+
     public ItemRegistryGenerator() {
-        super(ItemData.class, "ItemRegistry", ItemRegistrySpec.class, "items.json");
+        super(ItemData.class, "ItemRegistry", ItemRegistrySpec.class, "items.smile");
     }
 
     private static final Map<ToolMaterial, ToolTier> tierMap = Map.of(
@@ -49,6 +46,7 @@ public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
 
     @Override
     public List<ItemData> buildDataList() {
+        encodedComponentBytesByDataComponents.clear();
         final List<ItemData> items = new ArrayList<>();
         DefaultedRegistry<Item> registry = BuiltInRegistries.ITEM;
 
@@ -63,7 +61,7 @@ public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
             items.add(new ItemData(
                 registry.getId(item),
                 registry.getKey(item).getPath(),
-                extractMcplComponents(item.getDefaultInstance().getComponents()),
+                extractSerializedComponents(item.getDefaultInstance().getComponents()),
                 getZenithItemTags(item),
                 toolTag)
             );
@@ -102,44 +100,56 @@ public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
     @Override
     public void dumpJson(List<ItemData> dataList) {
         var jacksonModule = new SimpleModule();
-        jacksonModule.addSerializer(DataComponents.class, new DataComponentsSerializer());
-        var mapper = JsonMapper.builder()
+        jacksonModule.addSerializer(DataComponents.class, new DataComponentsSerializer(encodedComponentBytesByDataComponents));
+        var mapper = SmileMapper.builder()
             .addModule(jacksonModule)
             .build();
-        try (Writer out = new FileWriter(DataGenerator.outputFile(jsonFileName))) {
-            mapper.writer().writeValue(out, dataList);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        try {
+            mapper.writer().writeValue(DataGenerator.outputFile(jsonFileName), dataList);
+        } finally {
+            encodedComponentBytesByDataComponents.clear();
         }
         LOG.info("Dumped {}", jsonFileName);
     }
 
-    DataComponents extractMcplComponents(DataComponentMap components) {
-        var mcplComponents = new DataComponents(new HashMap<>());
+    DataComponents extractSerializedComponents(DataComponentMap components) {
+        var encodedComponents = new Int2ObjectArrayMap<byte[]>();
         for (TypedDataComponent component : components) {
             var type = component.type();
             var componentId = BuiltInRegistries.DATA_COMPONENT_TYPE.getId(type);
             var buf = ByteBufAllocator.DEFAULT.buffer();
-            var rbuf = new RegistryFriendlyByteBuf(buf, DataGenerator.SERVER_INSTANCE.registryAccess());
-            component.type().streamCodec().encode(rbuf, component.value());
-            DataComponentType mcplType = DataComponentTypes.from(componentId);
-            DataComponent mcplComponent = mcplType.readDataComponent(buf);
-
-            mcplComponents.getDataComponents().put(mcplType, mcplComponent);
-            buf.release();
+            try {
+                var rbuf = new RegistryFriendlyByteBuf(buf, DataGenerator.SERVER_INSTANCE.registryAccess());
+                component.type().streamCodec().encode(rbuf, component.value());
+                var bytes = new byte[buf.readableBytes()];
+                buf.getBytes(buf.readerIndex(), bytes);
+                encodedComponents.put(componentId, bytes);
+            } finally {
+                buf.release();
+            }
         }
-        return mcplComponents;
+        var placeholder = new DataComponents(new HashMap<>());
+        encodedComponentBytesByDataComponents.put(placeholder, encodedComponents);
+        return placeholder;
     }
 
     static class DataComponentsSerializer extends StdSerializer<DataComponents> {
+        private final IdentityHashMap<DataComponents, Int2ObjectArrayMap<byte[]>> encodedComponentBytesByDataComponents;
 
-        protected DataComponentsSerializer() {
+        protected DataComponentsSerializer(final IdentityHashMap<DataComponents, Int2ObjectArrayMap<byte[]>> encodedComponentBytesByDataComponents) {
             super(DataComponents.class);
+            this.encodedComponentBytesByDataComponents = encodedComponentBytesByDataComponents;
         }
 
         @Override
         public void serialize(final DataComponents components, final JsonGenerator jsonGenerator, final SerializationContext provider) throws JacksonException {
-            Int2ObjectArrayMap<String> serializedComponents = new Int2ObjectArrayMap<>();
+            var preEncoded = encodedComponentBytesByDataComponents.get(components);
+            if (preEncoded != null) {
+                jsonGenerator.writePOJO(preEncoded);
+                return;
+            }
+
+            Int2ObjectArrayMap<byte[]> serializedComponents = new Int2ObjectArrayMap<>();
             for (var entry : components.getDataComponents().entrySet()) {
                 DataComponentType type = entry.getKey();
                 var componentId = type.getId();
@@ -149,9 +159,7 @@ public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
                 var bytes = new byte[buf.readableBytes()];
                 buf.markReaderIndex();
                 buf.readBytes(bytes);
-                var encoder = Base64.getEncoder();
-                var base64String = encoder.encodeToString(bytes);
-                serializedComponents.put(componentId,  base64String);
+                serializedComponents.put(componentId, bytes);
                 buf.release();
             }
             jsonGenerator.writePOJO(serializedComponents);

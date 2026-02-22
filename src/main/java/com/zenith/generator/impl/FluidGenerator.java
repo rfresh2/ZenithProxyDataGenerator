@@ -9,9 +9,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.WaterFluid;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
 
 import static com.zenith.DataGenerator.LOG;
@@ -39,12 +36,8 @@ public class FluidGenerator implements Generator {
             }
         });
 
-        try (Writer out = new FileWriter(DataGenerator.outputFile("fluidStates.json"))) {
-            DataGenerator.gson.toJson(result, out);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        LOG.info("Dumped fluidStates.json");
+        DataGenerator.writeSmile("fluidStates.smile", result);
+        LOG.info("Dumped fluidStates.smile");
     }
 
     record FluidState(boolean water, boolean source, int amount, boolean falling) { }

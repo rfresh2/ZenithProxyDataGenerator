@@ -8,8 +8,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 
-import java.io.FileWriter;
-import java.io.Writer;
 import java.util.List;
 
 public class PathfindableGenerator implements Generator {
@@ -26,11 +24,7 @@ public class PathfindableGenerator implements Generator {
                 }
             });
         });
-        try (Writer out = new FileWriter(DataGenerator.outputFile("pathfindable.json"))) {
-            DataGenerator.gson.toJson(list, out);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        DataGenerator.LOG.info("Dumped pathfindable.json");
+        DataGenerator.writeSmile("pathfindable.smile", list);
+        DataGenerator.LOG.info("Dumped pathfindable.smile");
     }
 }
