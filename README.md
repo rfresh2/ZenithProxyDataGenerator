@@ -1,6 +1,6 @@
 # ZenithProxy MC Data Generator
 
-This subproject generates JSON and Java class files of Minecraft data for use in [ZenithProxy](https://github.com/rfresh2/ZenithProxy/).
+This subproject generates Smile-encoded binary data files and Java class files of Minecraft data for use in [ZenithProxy](https://github.com/rfresh2/ZenithProxy/).
 
 This project is purposefully not added as a direct dependency to avoid increasing ZenithProxy build times unnecessarily.
 The data itself only needs to be generated one time per MC version.
@@ -24,7 +24,7 @@ versus
 1. Execute the `runServer` task
 2. Manually copy files from `build/data` into the main ZenithProxy project.
 
-JSON data files should be copied to `src/main/resources/mcdata`.
+Smile data files (`.smile`) should be copied to `src/main/resources/mcdata`.
 
 Java class files should be copied to their corresponding packages in `src/main/java/com/zenith/mc`.
 

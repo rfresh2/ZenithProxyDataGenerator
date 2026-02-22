@@ -1,7 +1,5 @@
 package com.zenith;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.zenith.generator.Generator;
 import com.zenith.generator.impl.*;
 import net.fabricmc.api.DedicatedServerModInitializer;
@@ -9,6 +7,8 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.smile.SmileMapper;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -20,10 +20,8 @@ import static java.util.Arrays.asList;
 public class DataGenerator implements DedicatedServerModInitializer {
     public static final Logger LOG = LoggerFactory.getLogger("ZenithProxy");
     public static final Path dataDir = resolveDataDir();
-    public static final Gson gson = new GsonBuilder()
-        .setLenient()
-        .disableHtmlEscaping()
-        .create();
+    public static final JsonMapper JSON_MAPPER = JsonMapper.builder().build();
+    public static final SmileMapper SMILE_MAPPER = SmileMapper.builder().build();
     public static final List<Generator> generators = asList(
         new BiomeRegistryGenerator(),
         new BlockCollisionShapes(),
@@ -71,5 +69,9 @@ public class DataGenerator implements DedicatedServerModInitializer {
 
     public static File outputFile(final String fileName) {
         return dataDir.resolve(fileName).toFile();
+    }
+
+    public static void writeSmile(final String fileName, final Object value) {
+        SMILE_MAPPER.writeValue(outputFile(fileName), value);
     }
 }

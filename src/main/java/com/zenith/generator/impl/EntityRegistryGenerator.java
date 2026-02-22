@@ -20,7 +20,7 @@ import java.util.UUID;
 
 public class EntityRegistryGenerator extends JsonRegistryGenerator<EntityData> {
     public EntityRegistryGenerator() {
-        super(EntityData.class, "EntityRegistry", EntityRegistrySpec.class, "entities.json");
+        super(EntityData.class, "EntityRegistry", EntityRegistrySpec.class, "entities.smile");
     }
 
     @Override

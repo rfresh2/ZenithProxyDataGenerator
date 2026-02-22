@@ -48,6 +48,7 @@ dependencies {
     }
     api(platform("tools.jackson:jackson-bom:3.0.4"))
     api("tools.jackson.core:jackson-databind")
+    api("tools.jackson.dataformat:jackson-dataformat-smile")
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")

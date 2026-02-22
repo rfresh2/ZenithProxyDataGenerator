@@ -1,14 +1,11 @@
 package com.zenith.generator.impl;
 
-import com.google.gson.reflect.TypeToken;
 import com.zenith.DataGenerator;
 import com.zenith.generator.Generator;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import tools.jackson.core.type.TypeReference;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,9 +43,11 @@ public class Language implements Generator {
 
     @Override
     public void generate() {
-        try {
-            String rawJson = new String(Language.class.getResourceAsStream("/assets/minecraft/lang/en_us.json").readAllBytes(), StandardCharsets.UTF_8);
-            Map<String, String> json = (Map<String, String>) DataGenerator.gson.fromJson(rawJson, TypeToken.getParameterized(Map.class, String.class, String.class));
+        try (var inputStream = Language.class.getResourceAsStream("/assets/minecraft/lang/en_us.json")) {
+            if (inputStream == null) {
+                throw new RuntimeException("Failed to load /assets/minecraft/lang/en_us.json");
+            }
+            Map<String, String> json = DataGenerator.JSON_MAPPER.readValue(inputStream, new TypeReference<>() {});
             for (var it = json.entrySet().iterator(); it.hasNext(); ) {
                 var entry = it.next();
                 var prefix = entry.getKey().split("\\.")[0];
@@ -60,13 +59,8 @@ public class Language implements Generator {
             // Transform MC's language map values into java MessageFormat objects
             json.replaceAll((k, v) -> convertToMessageFormat(v));
 
-            byte[] bytes = DataGenerator.gson.toJson(json).getBytes(StandardCharsets.UTF_8);
-            Files.write(
-                DataGenerator.outputFile("language.json").toPath(),
-                bytes,
-                StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
-            );
-            DataGenerator.LOG.info("Dumped language.json");
+            DataGenerator.writeSmile("language.smile", json);
+            DataGenerator.LOG.info("Dumped language.smile");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

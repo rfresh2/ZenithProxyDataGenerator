@@ -21,20 +21,17 @@ import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponen
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
-import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.dataformat.smile.SmileMapper;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.*;
 
 import static com.zenith.DataGenerator.LOG;
 
 public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
     public ItemRegistryGenerator() {
-        super(ItemData.class, "ItemRegistry", ItemRegistrySpec.class, "items.json");
+        super(ItemData.class, "ItemRegistry", ItemRegistrySpec.class, "items.smile");
     }
 
     private static final Map<ToolMaterial, ToolTier> tierMap = Map.of(
@@ -117,14 +114,10 @@ public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
     public void dumpJson(List<ItemData> dataList) {
         var jacksonModule = new SimpleModule();
         jacksonModule.addSerializer(DataComponents.class, new DataComponentsSerializer());
-        var mapper = JsonMapper.builder()
+        var mapper = SmileMapper.builder()
             .addModule(jacksonModule)
             .build();
-        try (Writer out = new FileWriter(DataGenerator.outputFile(jsonFileName))) {
-            mapper.writer().writeValue(out, dataList);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        mapper.writer().writeValue(DataGenerator.outputFile(jsonFileName), dataList);
         LOG.info("Dumped {}", jsonFileName);
     }
 
