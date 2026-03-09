@@ -39,7 +39,7 @@ dependencies {
     })
     modImplementation("net.fabricmc:fabric-loader:0.18.3")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.119.4+1.21.4")
-    implementation("com.palantir.javapoet:javapoet:0.11.0")
+    implementation("com.palantir.javapoet:javapoet:0.12.0")
     implementation("com.github.rfresh2:MCProtocolLib:1.21.4.42") {
         exclude(group = "io.netty")
     }
