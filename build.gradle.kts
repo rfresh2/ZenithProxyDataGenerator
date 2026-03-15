@@ -1,5 +1,5 @@
 plugins {
-    id("net.fabricmc.fabric-loom-remap") version "1.15-SNAPSHOT"
+    id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT"
 }
 
 group = "com.zenith"
@@ -32,13 +32,13 @@ loom {
 val lombokVersion = "1.18.42"
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.21.11")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21.11:2025.12.20@zip")
-    })
-    modImplementation("net.fabricmc:fabric-loader:0.18.4")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.141.1+1.21.11")
+    minecraft("com.mojang:minecraft:26.1-snapshot-11")
+//    mappings(loom.layered {
+//        officialMojangMappings()
+//        parchment("org.parchmentmc.data:parchment-1.21.11:2025.12.20@zip")
+//    })
+    implementation("net.fabricmc:fabric-loader:0.18.4")
+    implementation("net.fabricmc.fabric-api:fabric-api:0.143.11+26.1")
     implementation("com.palantir.javapoet:javapoet:0.10.0")
     implementation("com.github.rfresh2:MCProtocolLib:1.21.11.8") {
         exclude(group = "io.netty")
