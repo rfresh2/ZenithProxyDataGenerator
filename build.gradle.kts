@@ -29,7 +29,7 @@ loom {
         }
     }
 }
-val lombokVersion = "1.18.42"
+val lombokVersion = "1.18.44"
 
 dependencies {
     minecraft("com.mojang:minecraft:1.21.4")
