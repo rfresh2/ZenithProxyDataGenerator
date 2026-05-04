@@ -39,7 +39,7 @@ dependencies {
     })
     modImplementation("net.fabricmc:fabric-loader:0.19.2")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.119.4+1.21.4")
-    implementation("com.palantir.javapoet:javapoet:0.14.0")
+    implementation("com.palantir.javapoet:javapoet:0.15.0")
     implementation("com.github.rfresh2:MCProtocolLib:1.21.4.49") {
         exclude(group = "io.netty")
     }
@@ -47,7 +47,7 @@ dependencies {
     implementation("com.zenith:ZenithProxy:1.21.4-SNAPSHOT") {
         isTransitive = false
     }
-    api(platform("tools.jackson:jackson-bom:3.1.2"))
+    api(platform("tools.jackson:jackson-bom:3.1.3"))
     api("tools.jackson.core:jackson-databind")
     api("tools.jackson.dataformat:jackson-dataformat-smile")
     compileOnly("org.projectlombok:lombok:$lombokVersion")
