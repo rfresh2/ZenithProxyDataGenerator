@@ -4,6 +4,8 @@ import com.palantir.javapoet.JavaFile;
 import com.palantir.javapoet.TypeSpec;
 import com.zenith.DataGenerator;
 import com.zenith.generator.Generator;
+import net.minecraft.tags.BlockItemTagId;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 
@@ -11,6 +13,7 @@ import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 
 public class ItemTagsGenerator implements Generator {
     @Override
@@ -22,7 +25,13 @@ public class ItemTagsGenerator implements Generator {
             .filter(field -> field.getType().equals(TagKey.class))
             .map(Field::getName)
             .toList();
-        tags.forEach(enumBuilder::addEnumConstant);
+        var blockItemTags = Arrays.stream(BlockItemTags.class.getDeclaredFields())
+            .filter(field -> field.getType().equals(BlockItemTagId.class))
+            .map(Field::getName)
+            .toList();
+        LinkedHashSet<String> tagSet = new LinkedHashSet<>(tags);
+        tagSet.addAll(blockItemTags);
+        tagSet.forEach(enumBuilder::addEnumConstant);
 
         var enumTypeSpec = enumBuilder.build();
         var javaFile = JavaFile

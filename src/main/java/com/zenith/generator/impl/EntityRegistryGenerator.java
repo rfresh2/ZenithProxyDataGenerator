@@ -63,7 +63,7 @@ public class EntityRegistryGenerator extends JsonRegistryGenerator<EntityData> {
     }
 
     private Entity createEntity(EntityType<?> type) {
-        if (type == EntityType.PLAYER) {
+        if (type == EntityTypes.PLAYER) {
             CommonListenerCookie commonListenerCookie = CommonListenerCookie.createInitial(new GameProfile(
                 UUID.randomUUID(), "test-mock-player"), false);
             return new ServerPlayer(

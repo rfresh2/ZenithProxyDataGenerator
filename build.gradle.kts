@@ -33,15 +33,15 @@ loom {
 val lombokVersion = "1.18.46"
 
 dependencies {
-    minecraft("com.mojang:minecraft:26.1.2")
+    minecraft("com.mojang:minecraft:26.2")
     implementation("net.fabricmc:fabric-loader:0.19.3")
-    implementation("net.fabricmc.fabric-api:fabric-api:0.152.1+26.1.2")
+    implementation("net.fabricmc.fabric-api:fabric-api:0.152.1+26.2")
     implementation("com.palantir.javapoet:javapoet:0.16.0")
-    implementation("com.github.rfresh2:MCProtocolLib:26.1.2.10") {
+    implementation("com.github.rfresh2:MCProtocolLib:26.2.0.1") {
         exclude(group = "io.netty")
     }
     implementation("org.cloudburstmc.math:immutable:2.0")
-    implementation("com.zenith:ZenithProxy:26.1.2-SNAPSHOT") {
+    implementation("com.zenith:ZenithProxy:26.2.0-SNAPSHOT") {
         isTransitive = false
     }
     api(platform("tools.jackson:jackson-bom:3.2.0"))

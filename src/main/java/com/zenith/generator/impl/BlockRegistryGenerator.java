@@ -8,6 +8,7 @@ import com.zenith.mc.block.BlockTags;
 import com.zenith.mixin.AccessorBlockBehavior;
 import lombok.SneakyThrows;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.tags.BlockItemTagId;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -68,12 +69,22 @@ public class BlockRegistryGenerator extends JsonRegistryGenerator<Block> {
         var tagFields = Arrays.stream(net.minecraft.tags.BlockTags.class.getDeclaredFields())
             .filter(field -> field.getType().equals(TagKey.class))
             .toList();
-        for (var tag : tagsOnBlock) {
+        var blockItemTagFields = Arrays.stream(net.minecraft.tags.BlockItemTags.class.getDeclaredFields())
+            .filter(field -> field.getType().equals(BlockItemTagId.class))
+            .toList();
+        OUTER: for (var tag : tagsOnBlock) {
             for (var field : tagFields) {
                 var fieldValue = (TagKey<Block>) field.get(null);
                 if (fieldValue.location().equals(tag.location())) {
                     set.add(BlockTags.valueOf(field.getName()));
-                    break;
+                    continue OUTER;
+                }
+            }
+            for (var field : blockItemTagFields) {
+                var fieldValue = (BlockItemTagId) field.get(null);
+                if (fieldValue.block().location().equals(tag.location())) {
+                    set.add(BlockTags.valueOf(field.getName()));
+                    continue OUTER;
                 }
             }
         }

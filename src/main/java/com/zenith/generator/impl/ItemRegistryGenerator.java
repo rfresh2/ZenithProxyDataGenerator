@@ -12,9 +12,10 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.tags.BlockItemTagId;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.*;
-import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ToolMaterial;
 import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponentType;
 import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponents;
 import tools.jackson.core.JacksonException;
@@ -80,12 +81,22 @@ public class ItemRegistryGenerator extends JsonRegistryGenerator<ItemData> {
         var tagFields = Arrays.stream(net.minecraft.tags.ItemTags.class.getDeclaredFields())
             .filter(field -> field.getType().equals(TagKey.class))
             .toList();
-        for (var tag : tagsOnItem) {
+        var blockItemTagFields = Arrays.stream(net.minecraft.tags.BlockItemTags.class.getDeclaredFields())
+            .filter(field -> field.getType().equals(BlockItemTagId.class))
+            .toList();
+        OUTER: for (var tag : tagsOnItem) {
             for (var field : tagFields) {
                 var fieldValue = (TagKey<Item>) field.get(null);
                 if (fieldValue.location().equals(tag.location())) {
                     set.add(ItemTags.valueOf(field.getName()));
-                    break;
+                    continue OUTER;
+                }
+            }
+            for (var field : blockItemTagFields) {
+                var fieldValue = (BlockItemTagId) field.get(null);
+                if (fieldValue.item().location().equals(tag.location())) {
+                    set.add(ItemTags.valueOf(field.getName()));
+                    continue OUTER;
                 }
             }
         }
