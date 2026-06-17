@@ -1,5 +1,5 @@
 plugins {
-    id("net.fabricmc.fabric-loom-remap") version "1.16-SNAPSHOT"
+    id("net.fabricmc.fabric-loom-remap") version "1.17-SNAPSHOT"
 }
 
 group = "com.zenith"
@@ -23,9 +23,9 @@ loom {
     accessWidenerPath = file("src/main/resources/zenithproxy.accesswidener")
     runs {
         getByName("server") {
-            ideConfigGenerated(true)
+            generateRunConfig = true
             server()
-            property("data.dir", project.layout.buildDirectory.file("data").get().asFile.absolutePath)
+            systemProperties.put("data.dir", project.layout.buildDirectory.file("data").get().asFile.absolutePath)
         }
     }
 }
@@ -37,10 +37,10 @@ dependencies {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-1.21.4:2025.03.23@zip")
     })
-    modImplementation("net.fabricmc:fabric-loader:0.19.2")
+    modImplementation("net.fabricmc:fabric-loader:0.19.3")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.119.4+1.21.4")
     implementation("com.palantir.javapoet:javapoet:0.16.0")
-    implementation("com.github.rfresh2:MCProtocolLib:1.21.4.49") {
+    implementation("com.github.rfresh2:MCProtocolLib:1.21.4.57") {
         exclude(group = "io.netty")
     }
     implementation("org.cloudburstmc.math:immutable:2.0")
