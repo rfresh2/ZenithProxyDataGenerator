@@ -1,5 +1,5 @@
 plugins {
-    id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT"
+    id("net.fabricmc.fabric-loom") version "1.17-SNAPSHOT"
 }
 
 group = "com.zenith"
@@ -24,27 +24,27 @@ loom {
     accessWidenerPath = file("src/main/resources/zenithproxy.accesswidener")
     runs {
         getByName("server") {
-            ideConfigGenerated(true)
+            generateRunConfig = true
             server()
-            property("data.dir", project.layout.buildDirectory.file("data").get().asFile.absolutePath)
+            systemProperties.put("data.dir", project.layout.buildDirectory.file("data").get().asFile.absolutePath)
         }
     }
 }
-val lombokVersion = "1.18.44"
+val lombokVersion = "1.18.46"
 
 dependencies {
     minecraft("com.mojang:minecraft:26.1.2")
-    implementation("net.fabricmc:fabric-loader:0.19.2")
-    implementation("net.fabricmc.fabric-api:fabric-api:0.146.0+26.1.2")
-    implementation("com.palantir.javapoet:javapoet:0.14.0")
-    implementation("com.github.rfresh2:MCProtocolLib:26.1.2.2") {
+    implementation("net.fabricmc:fabric-loader:0.19.3")
+    implementation("net.fabricmc.fabric-api:fabric-api:0.152.1+26.1.2")
+    implementation("com.palantir.javapoet:javapoet:0.16.0")
+    implementation("com.github.rfresh2:MCProtocolLib:26.1.2.10") {
         exclude(group = "io.netty")
     }
     implementation("org.cloudburstmc.math:immutable:2.0")
     implementation("com.zenith:ZenithProxy:26.1.2-SNAPSHOT") {
         isTransitive = false
     }
-    api(platform("tools.jackson:jackson-bom:3.1.2"))
+    api(platform("tools.jackson:jackson-bom:3.2.0"))
     api("tools.jackson.core:jackson-databind")
     api("tools.jackson.dataformat:jackson-dataformat-smile")
     compileOnly("org.projectlombok:lombok:$lombokVersion")
