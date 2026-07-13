@@ -47,7 +47,7 @@ dependencies {
     implementation("com.zenith:ZenithProxy:1.21.4-SNAPSHOT") {
         isTransitive = false
     }
-    api(platform("tools.jackson:jackson-bom:3.2.0"))
+    api(platform("tools.jackson:jackson-bom:3.2.1"))
     api("tools.jackson.core:jackson-databind")
     api("tools.jackson.dataformat:jackson-dataformat-smile")
     compileOnly("org.projectlombok:lombok:$lombokVersion")
