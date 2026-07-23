@@ -49,6 +49,7 @@ public class EntityRegistryGenerator extends JsonRegistryGenerator<EntityData> {
                 registryKey.getPath(),
                 entity.getDimensions().width(),
                 entity.getDimensions().height(),
+                entity.getDimensions().eyeHeight(),
                 instance.isAttackable(),
                 instance.isPickable(), // TODO: there is much more logic in the entity class hierarchy about when this is true
                 instance instanceof LivingEntity,
