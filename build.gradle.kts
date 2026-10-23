@@ -40,7 +40,7 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:0.19.3")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.119.4+1.21.4")
     implementation("com.palantir.javapoet:javapoet:0.21.0")
-    implementation("com.github.rfresh2:MCProtocolLib:1.21.4.57") {
+    implementation("com.github.rfresh2:MCProtocolLib:1.21.4.73") {
         exclude(group = "io.netty")
     }
     implementation("org.cloudburstmc.math:immutable:2.0")
