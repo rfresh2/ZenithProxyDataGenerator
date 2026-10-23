@@ -1,5 +1,5 @@
 plugins {
-    id("net.fabricmc.fabric-loom-remap") version "1.18-SNAPSHOT"
+    id("net.fabricmc.fabric-loom-remap") version "1.19-SNAPSHOT"
 }
 
 group = "com.zenith"
