@@ -5,6 +5,7 @@ import com.zenith.generator.JsonRegistryGenerator;
 import com.zenith.mc.block.Block;
 import com.zenith.mc.block.BlockRegistrySpec;
 import com.zenith.mc.block.BlockTags;
+import com.zenith.mc.block.PushReaction;
 import com.zenith.mixin.AccessorBlockBehavior;
 import lombok.SneakyThrows;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -52,10 +53,21 @@ public class BlockRegistryGenerator extends JsonRegistryGenerator<Block> {
                 ((IBlockProperties) block.properties()).dg$getSpeedFactor(),
                 ((IBlockProperties) block.properties()).dg$getJumpFactor(),
                 block instanceof FallingBlock,
+                mapPistonPushReactionType(block.defaultBlockState().getPistonPushReaction()),
                 mcplBlockEntityType);
             blockList.add(data);
         });
         return blockList;
+    }
+
+    private PushReaction mapPistonPushReactionType(net.minecraft.world.level.material.PushReaction pushReaction) {
+        return switch (pushReaction) {
+            case PUSH_PULL -> PushReaction.NORMAL;
+            case PUSH -> PushReaction.DESTROY;
+            case POPPED -> PushReaction.BLOCK;
+            case IMMOVEABLE -> PushReaction.IGNORE;
+            case IGNORE_ENTITY -> PushReaction.PUSH_ONLY;
+        };
     }
 
     @SneakyThrows
